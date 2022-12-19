@@ -12,9 +12,9 @@ function generateConfigContent (opts: Dictionary<any>): string {
 }
 
 export default async function createConfig (initOptions: InitOptions): Promise<void> {
-    const configPath = path.join(initOptions.rootPath, CONFIG_NAME);
+    const configPath = path.join(initOptions.rootPath, initOptions.appPath, CONFIG_NAME);
     const browsers   = OS.mac ? 'safari' : 'chrome';
-    const src        = initOptions.testsFolder;
+    const src        = initOptions.testFolder;
 
     if (fs.existsSync(configPath))
         throw new Error('Testcafe config already exists');

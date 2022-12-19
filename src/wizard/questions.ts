@@ -9,7 +9,7 @@ export const SELECT_TEMPLATE = {
 
 export const SELECT_TESTS_FOLDER = {
     type:    'input',
-    name:    'testsFolder',
+    name:    'testFolder',
     message: 'Choose tests folder',
 };
 

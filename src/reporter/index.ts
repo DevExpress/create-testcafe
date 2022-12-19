@@ -4,6 +4,6 @@ export default class Reporter {
     }
 
     error (message: string): void {
-        console.error(message);
+        throw new Error(message);
     }
 }

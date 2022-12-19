@@ -2,10 +2,11 @@ import { Dictionary } from '../interfaces';
 import path from 'path';
 import { TEMPLATES } from './templates';
 import * as fs from 'fs';
+import InitOptions from './init-options';
 
-function resolveProjectType (rootPath: string): string | null {
-    const packageJsonExists = fs.existsSync(path.join(rootPath, 'package.json'));
-    const tsConfigExists    = packageJsonExists && fs.existsSync(path.join(rootPath, '.tsconfig.json'));
+function resolveProjectType (rootPath: string, appPath: string): string | null {
+    const packageJsonExists = fs.existsSync(path.join(rootPath, appPath, 'package.json'));
+    const tsConfigExists    = packageJsonExists && fs.existsSync(path.join(rootPath, appPath, '.tsconfig.json'));
 
     if (tsConfigExists)
         return TEMPLATES.typescript;
@@ -16,9 +17,9 @@ function resolveProjectType (rootPath: string): string | null {
     return null;
 }
 
-export default function getEnvironmentOptions (): Dictionary<any> {
+export default function getEnvironmentOptions ({ appPath }: InitOptions): Dictionary<any> {
     const rootPath    = path.resolve(process.cwd(), '');
-    const projectType = resolveProjectType(rootPath);
+    const projectType = resolveProjectType(rootPath, appPath);
 
     return {
         rootPath,
