@@ -13,14 +13,13 @@ function generateConfigContent (opts: Dictionary<any>): string {
 
 export default async function createConfig (initOptions: InitOptions): Promise<void> {
     const configPath = path.join(initOptions.rootPath, CONFIG_NAME);
-    const browser    = OS.mac ? 'safari' : 'chrome';
+    const browsers   = OS.mac ? 'safari' : 'chrome';
     const src        = initOptions.testsFolder;
 
     if (fs.existsSync(configPath))
         throw new Error('Testcafe config already exists');
 
-
-    const configContent = generateConfigContent({ browser, src });
+    const configContent = generateConfigContent({ browsers, src });
 
     await fs.promises.writeFile(configPath, configContent);
 }

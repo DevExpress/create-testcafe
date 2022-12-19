@@ -16,9 +16,9 @@ export default class TemplateGenerator {
     private readonly initOptions: InitOptions;
     private readonly reporter: Reporter;
 
-    constructor (options: InitOptions) {
+    constructor (options: InitOptions, reporter: Reporter) {
         this.initOptions = options;
-        this.reporter    = new Reporter();
+        this.reporter    = reporter;
 
         this.initOptions.setUnsetOptionsToDefaults();
         this.initOptions.validateAll();

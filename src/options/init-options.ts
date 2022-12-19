@@ -10,7 +10,7 @@ export class InitOptions {
     projectType: ProjectType = null;
     rootPath = '';
     runNpmInstall = true;
-    testScriptName = '';
+    testScriptName = 'test';
     silent = false;
 
     constructor (opts?: Dictionary<any>) {
