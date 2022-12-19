@@ -11,9 +11,9 @@ const options  = new InitOptions();
 const reporter = new Reporter();
 
 Promise.resolve()
-    .then(() => getEnvironmentOptions())
-    .then(opts => options.merge(opts))
     .then(() => getRunArgs())
+    .then(opts => options.merge(opts))
+    .then(() => getEnvironmentOptions(options))
     .then(args => options.merge(args))
     .then(() => !options.silent ? runWizard(options) : {})
     .then(opts => options.merge(opts))

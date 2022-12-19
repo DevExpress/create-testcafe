@@ -32,10 +32,12 @@ export default class TemplateGenerator {
             if (this.initOptions.projectType)
                 await this._updatePackageJson();
 
+
             await this._createConfigFile();
 
             if (this.initOptions.runNpmInstall)
                 await this._runNpmInstall();
+
 
             await this._removeTmpDir();
         }
@@ -60,8 +62,8 @@ export default class TemplateGenerator {
 
         let distPaths = this._patchTestFolderPaths(srcPaths);
 
-        srcPaths  = this._buildAbsolutePaths(srcPaths, templateFolderPath);
-        distPaths = this._buildAbsolutePaths(distPaths, this.initOptions.rootPath);
+        srcPaths  = srcPaths.map(p => path.join(templateFolderPath, p));
+        distPaths = distPaths.map(p => path.join(this.initOptions.rootPath, this.initOptions.appPath, p));
 
         for (let i = 0; i < srcPaths.length; i++)
             await fs.promises.cp(srcPaths[i], distPaths[i], { recursive: true });
@@ -83,7 +85,6 @@ export default class TemplateGenerator {
         if (this.initOptions.projectType)
             return paths.filter(p => p !== 'package.json');
 
-
         return paths;
     }
 
@@ -97,11 +98,7 @@ export default class TemplateGenerator {
     }
 
     private _patchTestFolderPaths (paths: string[]): string[] {
-        return paths.map(p => p.replace(DEFAULT_TESTS_PATH, this.initOptions.testsFolder));
-    }
-
-    private _buildAbsolutePaths (paths: string[], root: string): string[] {
-        return paths.map(p => path.join(root, p));
+        return paths.map(p => p.replace(DEFAULT_TESTS_PATH, this.initOptions.testFolder));
     }
 
     private _cloneRepo (): void {
@@ -114,7 +111,9 @@ export default class TemplateGenerator {
     private _runNpmInstall (): void {
         this.reporter.log(MESSAGES.runNpmInstall);
 
-        this._runCommand(NPM_INSTALL_COMMAND);
+        const command = `cd ${ this.initOptions.appPath } && ${ NPM_INSTALL_COMMAND }`;
+
+        this._runCommand(command);
     }
 
 }

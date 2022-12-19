@@ -19,10 +19,10 @@ function setInitialValues (questions: any[], initials: Dictionary<any>): any[] {
 }
 
 function calculateInitialValues (initOpts: InitOptions): Dictionary<any> {
-    const template                       = initOpts.template || initOpts.projectType || TEMPLATES.typescript;
-    const { testsFolder, runNpmInstall } = initOpts;
+    const template                      = initOpts.template || initOpts.projectType || TEMPLATES.typescript;
+    const { testFolder, runNpmInstall } = initOpts;
 
-    return { template, testsFolder, runNpmInstall };
+    return { template, testFolder, runNpmInstall };
 }
 
 function setValidators (questions: any[], validators: Dictionary<any>, initOptions: InitOptions): any[] {
@@ -30,18 +30,20 @@ function setValidators (questions: any[], validators: Dictionary<any>, initOptio
         if (question.name in validators)
             question.validate = validators[question.name](initOptions);
 
+
         return question;
     });
 }
 
 export default async function runWizard (initOpts: InitOptions): Promise<Dictionary<any>> {
     const initialValues = calculateInitialValues(initOpts);
-    const validators    = { testsFolder: validateTestsFolder };
+    const validators    = { testFolder: validateTestsFolder };
     let questions       = [ SELECT_TEMPLATE, SELECT_TESTS_FOLDER, RUN_NPM_INSTALL ];
 
     questions = setInitialValues(questions, initialValues);
     questions = setValidators(questions, validators, initOpts);
 
+    //TODO: Refactor to chain options assigment call
     const answers = await prompt(questions);
 
     return answers;

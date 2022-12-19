@@ -1,5 +1,6 @@
 import InitOptions from '../options/init-options';
 import PackageJson from '@npmcli/package-json';
+import path from 'path';
 
 const TEST_SCRIPT = 'testcafe';
 
@@ -11,7 +12,7 @@ function getEmptyTestScriptName (pkgJson: PackageJson): string {
 }
 
 export default async function updatePackageJson (options: InitOptions): Promise<void> {
-    const pkgJson        = await PackageJson.load(options.rootPath);
+    const pkgJson        = await PackageJson.load(path.join(options.rootPath, options.appPath));
     const testScriptName = getEmptyTestScriptName(pkgJson);
 
     await pkgJson.update({

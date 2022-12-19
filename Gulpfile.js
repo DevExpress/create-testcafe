@@ -23,10 +23,10 @@ gulp.task('clean', () => {
 
 gulp.task('compile', () => childProcess.spawn('tsc', { shell: true, stdio: 'inherit' }));
 
-gulp.task('reinstall-package', () => {
-    childProcess.spawn('npm uninstall -g create-testcafe', { shell: true, stdio: 'inherit' });
-    childProcess.spawn('npm i -g', { shell: true, stdio: 'inherit' });
-});
+gulp.task('reinstall-package', gulp.series(
+    () => childProcess.spawn('npm uninstall -g create-testcafe', { shell: true, stdio: 'inherit' }),
+    () => childProcess.spawn('npm i -g', { shell: true, stdio: 'inherit' }),
+));
 
 gulp.task('test-mocha', () => {
     const mochaOpts = [
