@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
-import { InitOptions } from '../options/init-options';
+import InitOptions from '../options/init-options';
 import updatePackageJson from './update-package-json';
 import createConfig from './create-config';
-import { Reporter } from '../reporter';
+import Reporter from '../reporter';
 import { MESSAGES } from '../reporter/messages';
 
 const TMP_DIR_NAME        = 'testcafe_init_tmp';

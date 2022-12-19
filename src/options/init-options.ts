@@ -4,7 +4,7 @@ import ensureTestsFolderValid from './validate-tests-folder';
 
 type ProjectType = 'javascript' | 'typescript' | null;
 
-export class InitOptions {
+export default class InitOptions {
     template = '';
     testsFolder = 'tests';
     projectType: ProjectType = null;
@@ -18,8 +18,6 @@ export class InitOptions {
     }
 
     merge (newOptions?: Dictionary<any>): void {
-        console.log('Before:', JSON.stringify(this));
-        console.log('ToMerge:', JSON.stringify(newOptions));
         if (!newOptions)
             return;
 
@@ -27,7 +25,6 @@ export class InitOptions {
             if (key in this)
                 this[key as keyof this] = newOptions[key];
         }
-        console.log('After:', JSON.stringify(this));
     }
 
     setUnsetOptionsToDefaults (): void {

@@ -1,5 +1,5 @@
 import ensureTestsFolderValid from '../options/validate-tests-folder';
-import { InitOptions } from '../options/init-options';
+import InitOptions from '../options/init-options';
 
 export function validateTestsFolder (initOptions: InitOptions) {
     return function (val: string) {

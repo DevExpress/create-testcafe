@@ -1,4 +1,4 @@
-import { InitOptions } from '../options/init-options';
+import InitOptions from '../options/init-options';
 // @ts-ignore
 import OS from 'os-family';
 import path from 'path';

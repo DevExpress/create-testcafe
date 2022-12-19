@@ -2,10 +2,10 @@
 
 import TemplateGenerator from './template-generator';
 import getEnvironmentOptions from './options/environment-options';
-import { InitOptions } from './options/init-options';
+import InitOptions from './options/init-options';
 import getRunArgs from './options/cli-parser';
 import runWizard from './wizard';
-import { Reporter } from './reporter';
+import Reporter from './reporter';
 
 const options  = new InitOptions();
 const reporter = new Reporter();

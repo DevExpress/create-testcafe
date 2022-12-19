@@ -1,4 +1,4 @@
-import { InitOptions } from '../options/init-options';
+import InitOptions from '../options/init-options';
 import PackageJson from '@npmcli/package-json';
 
 const TEST_SCRIPT = 'testcafe';

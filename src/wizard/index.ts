@@ -1,9 +1,11 @@
 import { Dictionary } from '../interfaces';
-import { InitOptions } from '../options/init-options';
+import InitOptions from '../options/init-options';
 import { prompt } from 'enquirer';
 import { TEMPLATES } from '../options/templates';
 import {
-    RUN_NPM_INSTALL, SELECT_TEMPLATE, SELECT_TESTS_FOLDER,
+    RUN_NPM_INSTALL,
+    SELECT_TEMPLATE,
+    SELECT_TESTS_FOLDER,
 } from './questions';
 import { validateTestsFolder } from './validators';
 

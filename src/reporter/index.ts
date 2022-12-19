@@ -1,4 +1,4 @@
-export class Reporter {
+export default class Reporter {
     log (message: string): void {
         console.log(message);
     }
