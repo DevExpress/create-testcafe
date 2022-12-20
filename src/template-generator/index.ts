@@ -6,6 +6,7 @@ import updatePackageJson from './update-package-json';
 import createConfig from './create-config';
 import Reporter from '../reporter';
 import { MESSAGES } from '../reporter/messages';
+import { createGithubWorkflow } from './create-github-workflow';
 
 const TMP_DIR_NAME        = 'testcafe_init_tmp';
 const CLONE_REPO_COMMAND  = `git clone --depth 1 https://github.com/Artem-Babich/testcafe-templates ${ TMP_DIR_NAME }`;
@@ -32,12 +33,13 @@ export default class TemplateGenerator {
             if (this.initOptions.projectType)
                 await this._updatePackageJson();
 
-
             await this._createConfigFile();
+
+            if (this.initOptions.createGithubWorkflow)
+                await this._createGitHubWorkflow();
 
             if (this.initOptions.runNpmInstall)
                 await this._runNpmInstall();
-
 
             await this._removeTmpDir();
         }
@@ -116,5 +118,10 @@ export default class TemplateGenerator {
         this._runCommand(command);
     }
 
+    private async _createGitHubWorkflow (): Promise<void> {
+        this.reporter.log(MESSAGES.createGithubWorkflow);
+
+        return createGithubWorkflow(this.initOptions);
+    }
 }
 
