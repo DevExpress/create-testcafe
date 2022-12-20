@@ -1,8 +1,7 @@
-import { Dictionary } from '../interfaces';
+import { Dictionary, ProjectType } from '../interfaces';
 import { TEMPLATES } from './templates';
-import ensureTestsFolderValid from './validate-tests-folder';
-
-type ProjectType = 'javascript' | 'typescript' | null;
+import path from 'path';
+import fs from 'fs';
 
 export default class InitOptions {
     template = '';
@@ -13,7 +12,7 @@ export default class InitOptions {
     testScriptName = 'test';
     silent = false;
     appPath = '.';
-    createGithubWorkflow = false;
+    createGithubWorkflow = true;
 
     constructor (opts?: Dictionary<any>) {
         this.merge(opts);
@@ -23,11 +22,9 @@ export default class InitOptions {
         if (!newOptions)
             return;
 
-
         for (const key in newOptions) {
             if (key in this)
                 this[key as keyof this] = newOptions[key];
-
         }
     }
 
@@ -36,17 +33,29 @@ export default class InitOptions {
     }
 
     validateAll (): void {
-        this.ensureTemplateValid();
-        this.ensureTestsFolderValid();
+        this._ensureTemplateValid();
+        this.ensureTestsFolderValid(this.testFolder);
     }
 
-    private ensureTemplateValid (): void {
+    ensureTestsFolderValid (value: string): void {
+        if (!value)
+            throw new Error(`Invalid tests folder path: "${ value }"`);
+
+        const testsFolderPath = path.join(this.rootPath, this.appPath, value);
+
+        if (!fs.existsSync(testsFolderPath))
+            return;
+
+        if (!fs.statSync(testsFolderPath).isDirectory())
+            throw new Error(`The specified tests path is not a folder: ${ testsFolderPath }`);
+
+        if (fs.readdirSync(testsFolderPath).length !== 0)
+            throw new Error(`Folder with name tests contains files inside`);
+    }
+
+    private _ensureTemplateValid (): void {
         if (!(this.template in TEMPLATES))
             throw new Error(`Template prop must be one of ${ Object.keys(TEMPLATES).join(', ') }`);
 
-    }
-
-    private ensureTestsFolderValid (): void {
-        return ensureTestsFolderValid(this.testFolder, this.rootPath);
     }
 }

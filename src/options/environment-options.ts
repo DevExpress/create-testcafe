@@ -1,28 +1,27 @@
-import { Dictionary } from '../interfaces';
 import path from 'path';
-import { TEMPLATES } from './templates';
 import * as fs from 'fs';
 import InitOptions from './init-options';
+import { ProjectType } from '../interfaces';
 
-function resolveProjectType (rootPath: string, appPath: string): string | null {
+function resolveProjectType (rootPath: string, appPath: string): ProjectType {
     const packageJsonExists = fs.existsSync(path.join(rootPath, appPath, 'package.json'));
     const tsConfigExists    = packageJsonExists && fs.existsSync(path.join(rootPath, appPath, '.tsconfig.json'));
 
     if (tsConfigExists)
-        return TEMPLATES.typescript;
+        return 'typescript';
 
     if (packageJsonExists)
-        return TEMPLATES.javascript;
+        return 'javascript';
 
     return null;
 }
 
-export default function getEnvironmentOptions ({ appPath }: InitOptions): Dictionary<any> {
+export default function setEnvironmentOptions (initOptions: InitOptions): void {
     const rootPath    = path.resolve(process.cwd(), '');
-    const projectType = resolveProjectType(rootPath, appPath);
+    const projectType = resolveProjectType(rootPath, initOptions.appPath);
 
-    return {
+    initOptions.merge({
         rootPath,
         projectType,
-    };
+    });
 }
