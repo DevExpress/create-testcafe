@@ -22,13 +22,13 @@ export function buildQuestions (initOpts: InitOptions): any[] {
         {
             type:    'confirm',
             name:    OPTIONS_NAMES.createGithubWorkflow,
-            message: 'Do you want to create a GitHub workflow. Default: No',
+            message: 'Do you want to create a GitHub workflow ?',
             initial: initOpts.createGithubWorkflow,
         },
         {
             type:    'confirm',
             name:    OPTIONS_NAMES.runNpmInstall,
-            message: 'Do you want to run "npm install"',
+            message: 'Do you want to run "npm install" ?',
             initial: initOpts.runNpmInstall,
         },
     ];
