@@ -56,12 +56,12 @@ describe('Installation', function () {
             const files = await getFiles(PROJECT_FOLDER);
 
             const expectedResult = [
-                'tmp_test_project\\.github\\workflows\\test.yml',
-                'tmp_test_project\\.testcaferc.js',
-                'tmp_test_project\\custom-test\\examples\\page-model.js',
-                'tmp_test_project\\custom-test\\examples\\test.js',
-                'tmp_test_project\\custom-test\\first-test.js',
-                'tmp_test_project\\package.json',
+                join('tmp_test_project', '.github', 'workflows', 'test.yml'),
+                join('tmp_test_project', '.testcaferc.js'),
+                join('tmp_test_project', 'custom-test', 'examples', 'page-model.js'),
+                join('tmp_test_project', 'custom-test', 'examples', 'test.js'),
+                join('tmp_test_project', 'custom-test', 'first-test.js'),
+                join('tmp_test_project', 'package.json'),
             ];
 
             expect(files).deep.equal(expectedResult);
@@ -85,11 +85,11 @@ describe('Installation', function () {
             const files = await getFiles(PROJECT_FOLDER);
 
             const expectedResult = [
-                'tmp_test_project\\.testcaferc.js',
-                'tmp_test_project\\package.json',
-                'tmp_test_project\\tests\\examples\\page-model.ts',
-                'tmp_test_project\\tests\\examples\\test.ts',
-                'tmp_test_project\\tests\\first-test.ts',
+                join('tmp_test_project', '.testcaferc.js'),
+                join('tmp_test_project', 'package.json'),
+                join('tmp_test_project', 'tests', 'examples', 'page-model.ts'),
+                join('tmp_test_project', 'tests', 'examples', 'test.ts'),
+                join('tmp_test_project', 'tests', 'first-test.ts'),
             ];
 
             expect(files).deep.equal(expectedResult);
