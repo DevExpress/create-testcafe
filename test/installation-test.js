@@ -41,7 +41,7 @@ async function getFiles (dir) {
 describe('Installation', function () {
     this.timeout(10000);
 
-    describe('Clean installation JS', ()=> {
+    describe('Clean installation JS', () => {
         before(() => initProject({
             template:                   'javascript',
             silent:                     true,
@@ -70,7 +70,14 @@ describe('Installation', function () {
 
 
     describe('Clean installation TS', () => {
-        before(() => initProject({ template: 'typescript', silent: true }));
+        this.timeout(20000);
+
+        before(() => initProject({
+            template:                   'typescript',
+            silent:                     true,
+            ['run-npm-install']:        false,
+            ['create-github-workflow']: false,
+        }));
 
         after(() => cleanProjectFolder());
 
@@ -79,10 +86,10 @@ describe('Installation', function () {
 
             const expectedResult = [
                 'tmp_test_project\\.testcaferc.js',
-                'tmp_test_project\\custom-test\\examples\\page-model.ts',
-                'tmp_test_project\\custom-test\\examples\\test.ts',
-                'tmp_test_project\\custom-test\\first-test.ts',
                 'tmp_test_project\\package.json',
+                'tmp_test_project\\tests\\examples\\page-model.ts',
+                'tmp_test_project\\tests\\examples\\test.ts',
+                'tmp_test_project\\tests\\first-test.ts',
             ];
 
             expect(files).deep.equal(expectedResult);
