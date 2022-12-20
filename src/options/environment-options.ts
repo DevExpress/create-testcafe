@@ -17,12 +17,12 @@ function resolveProjectType (rootPath: string, appPath: string): string | null {
     return null;
 }
 
-export default function getEnvironmentOptions ({ appPath }: InitOptions): Dictionary<any> {
+export default function setEnvironmentOptions ({ appPath, merge }: InitOptions): void {
     const rootPath    = path.resolve(process.cwd(), '');
     const projectType = resolveProjectType(rootPath, appPath);
 
-    return {
+    merge({
         rootPath,
         projectType,
-    };
+    });
 }
