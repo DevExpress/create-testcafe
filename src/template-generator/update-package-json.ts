@@ -11,9 +11,18 @@ function getEmptyTestScriptName (pkgJson: PackageJson): string {
     return 'testcafe';
 }
 
+function buildArgsString (options: InitOptions): string {
+    if (options.configFileName)
+        return ` --config-file ${ options.configFileName }`;
+
+    return '';
+}
+
 export default async function updatePackageJson (options: InitOptions): Promise<void> {
-    const pkgJson        = await PackageJson.load(path.join(options.rootPath, options.appPath));
-    const testScriptName = getEmptyTestScriptName(pkgJson);
+    const pkgJson             = await PackageJson.load(path.join(options.rootPath, options.appPath));
+    const testScriptName      = getEmptyTestScriptName(pkgJson);
+    const testScriptArguments = buildArgsString(options);
+    const testScript          = `${ TEST_SCRIPT }${ testScriptArguments }`;
 
     await pkgJson.update({
         dependencies:    pkgJson.content.dependencies,
@@ -23,11 +32,11 @@ export default async function updatePackageJson (options: InitOptions): Promise<
         },
         scripts: {
             ...pkgJson.content.scripts,
-            [testScriptName]: TEST_SCRIPT,
+            [testScriptName]: testScript,
         },
     });
 
-    options.merge({ testScriptName });
-
     await pkgJson.save();
+
+    options.merge({ testScriptName });
 }

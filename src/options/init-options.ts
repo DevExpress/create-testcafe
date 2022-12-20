@@ -13,6 +13,7 @@ export default class InitOptions {
     silent = false;
     appPath = '.';
     createGithubWorkflow = true;
+    configFileName = '';
 
     constructor (opts?: Dictionary<any>) {
         this.merge(opts);
@@ -37,20 +38,22 @@ export default class InitOptions {
         this.ensureTestsFolderValid(this.testFolder);
     }
 
-    ensureTestsFolderValid (value: string): void {
+    ensureTestsFolderValid (value: string): boolean {
         if (!value)
             throw new Error(`Invalid tests folder path: "${ value }"`);
 
         const testsFolderPath = path.join(this.rootPath, this.appPath, value);
 
         if (!fs.existsSync(testsFolderPath))
-            return;
+            return true;
 
         if (!fs.statSync(testsFolderPath).isDirectory())
             throw new Error(`The specified tests path is not a folder: ${ testsFolderPath }`);
 
         if (fs.readdirSync(testsFolderPath).length !== 0)
             throw new Error(`Folder with name tests contains files inside`);
+
+        return true;
     }
 
     private _ensureTemplateValid (): void {

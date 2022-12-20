@@ -29,11 +29,8 @@ export default class TemplateGenerator {
         try {
             await this._cloneRepo();
             await this._copyTemplateFiles();
-
-            if (this.initOptions.projectType)
-                await this._updatePackageJson();
-
             await this._createConfigFile();
+            await this._updatePackageJson();
 
             if (this.initOptions.createGithubWorkflow)
                 await this._createGitHubWorkflow();
