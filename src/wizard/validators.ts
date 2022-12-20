@@ -1,7 +1,7 @@
 import ensureTestsFolderValid from '../options/validate-tests-folder';
 import InitOptions from '../options/init-options';
 
-export function validateTestsFolder (initOptions: InitOptions) {
+export function testsFolderValidator (initOptions: InitOptions) {
     return function (val: string) {
         try {
             ensureTestsFolderValid(val, initOptions.rootPath);

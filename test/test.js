@@ -27,7 +27,9 @@ function cleanProjectFolder () {
 }
 
 
-describe('Clean installation JS', () => {
+describe('Clean installation JS', function () {
+    this.timeout(10000);
+
     before(() => initProject({
         template:            'javascript',
         silent:              true,

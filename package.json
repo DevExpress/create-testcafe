@@ -19,7 +19,6 @@
     "chai": "^4.3.7",
     "del": "^3.0.0",
     "enquirer": "^2.3.6",
-    "enquirer-prompts": "^1.0.0",
     "eslint": "8.22.0",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",

@@ -13,6 +13,7 @@ export default class InitOptions {
     testScriptName = 'test';
     silent = false;
     appPath = '.';
+    createGithubWorkflow = false;
 
     constructor (opts?: Dictionary<any>) {
         this.merge(opts);
