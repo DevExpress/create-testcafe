@@ -3,7 +3,7 @@
 import TemplateGenerator from './template-generator';
 import getEnvironmentOptions from './options/environment-options';
 import InitOptions from './options/init-options';
-import getRunArgs from './options/cli-parser';
+import getRunArgs from './cli/cli-parser';
 import runWizard from './wizard';
 import Reporter from './reporter';
 
@@ -21,5 +21,3 @@ Promise.resolve()
     .then(generator => generator.run())
     .then(() => reporter.log(`Success! Run "npm run ${ options.testScriptName }" to start example tests`))
     .catch(err => reporter.error(err));
-
-
