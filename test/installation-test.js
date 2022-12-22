@@ -54,7 +54,6 @@ describe('Installation', function () {
     describe('Clean installation JS', () => {
         before(() => initProject({
             template:                   'javascript',
-            silent:                     true,
             ['test-folder']:            'custom-test',
             ['run-npm-install']:        false,
             ['create-github-workflow']: true,
@@ -66,11 +65,10 @@ describe('Installation', function () {
             const files = await getFiles(PROJECT_FOLDER);
 
             const expectedResult = [
-                path.join(PROJECT_FOLDER, '.github', 'workflows', 'test.yml'),
+                path.join(PROJECT_FOLDER, '.github', 'workflows', 'testcafe.yml'),
                 path.join(PROJECT_FOLDER, '.testcaferc.js'),
-                path.join(PROJECT_FOLDER, 'custom-test', 'examples', 'page-model.js'),
-                path.join(PROJECT_FOLDER, 'custom-test', 'examples', 'test.js'),
-                path.join(PROJECT_FOLDER, 'custom-test', 'first-test.js'),
+                path.join(PROJECT_FOLDER, 'custom-test', 'page-model.js'),
+                path.join(PROJECT_FOLDER, 'custom-test', 'test.js'),
                 path.join(PROJECT_FOLDER, 'package.json'),
             ];
 
@@ -84,7 +82,6 @@ describe('Installation', function () {
 
         before(() => initProject({
             template:                   'typescript',
-            silent:                     true,
             ['run-npm-install']:        false,
             ['create-github-workflow']: false,
         }));
@@ -97,9 +94,8 @@ describe('Installation', function () {
             const expectedResult = [
                 path.join(PROJECT_FOLDER, '.testcaferc.js'),
                 path.join(PROJECT_FOLDER, 'package.json'),
-                path.join(PROJECT_FOLDER, 'tests', 'examples', 'page-model.ts'),
-                path.join(PROJECT_FOLDER, 'tests', 'examples', 'test.ts'),
-                path.join(PROJECT_FOLDER, 'tests', 'first-test.ts'),
+                path.join(PROJECT_FOLDER, 'tests', 'page-model.ts'),
+                path.join(PROJECT_FOLDER, 'tests', 'test.ts'),
             ];
 
             expect(files).deep.equal(expectedResult);
@@ -112,10 +108,10 @@ describe('Installation', function () {
 
             return initProject({
                 template:                   'javascript',
-                silent:                     true,
                 ['test-folder']:            'tests',
                 ['create-github-workflow']: true,
                 ['run-npm-install']:        false,
+                ['run-wizard']:             false,
             });
         });
 
@@ -125,13 +121,12 @@ describe('Installation', function () {
             const files = await getFiles(PROJECT_FOLDER);
 
             const expectedResult = [
-                path.join(PROJECT_FOLDER, '.github', 'workflows', 'test.yml'),
+                path.join(PROJECT_FOLDER, '.github', 'workflows', 'testcafe.yml'),
                 path.join(PROJECT_FOLDER, '.last.testcaferc.js'),
                 path.join(PROJECT_FOLDER, '.testcaferc.js'),
                 path.join(PROJECT_FOLDER, 'package.json'),
-                path.join(PROJECT_FOLDER, 'tests', 'examples', 'page-model.js'),
-                path.join(PROJECT_FOLDER, 'tests', 'examples', 'test.js'),
-                path.join(PROJECT_FOLDER, 'tests', 'first-test.js'),
+                path.join(PROJECT_FOLDER, 'tests', 'page-model.js'),
+                path.join(PROJECT_FOLDER, 'tests', 'test.js'),
             ];
 
             expect(files).deep.equal(expectedResult);

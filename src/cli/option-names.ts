@@ -1,7 +1,7 @@
 export const OPTION_NAMES = {
     template:             'template',
     testFolder:           'test-folder',
-    silent:               'silent',
+    runWizard:            'run-wizard',
     runNpmInstall:        'run-npm-install',
     createGithubWorkflow: 'create-github-workflow',
 };

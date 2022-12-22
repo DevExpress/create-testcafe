@@ -1,18 +1,16 @@
-import { Dictionary, ProjectType } from '../interfaces';
+import { Dictionary, ProjectTemplate } from '../interfaces';
 import { TEMPLATES } from './templates';
 import path from 'path';
 import fs from 'fs';
 
 export default class InitOptions {
-    template = '';
+    template: ProjectTemplate | null = null;
+    runWizard: boolean | null = null;
+    runNpmInstall: boolean | null = null;
+    createGithubWorkflow: boolean | null = null;
+    rootPath = process.cwd();
     testFolder = 'tests';
-    projectType: ProjectType = null;
-    rootPath = '';
-    runNpmInstall = true;
     testScriptName = 'test';
-    silent = false;
-    appPath = '.';
-    createGithubWorkflow = true;
     configFileName = '';
 
     constructor (opts?: Dictionary<any>) {
@@ -29,8 +27,10 @@ export default class InitOptions {
         }
     }
 
-    setUnsetOptionsToDefaults (): void {
-        this.template = this.template || this.projectType || TEMPLATES.typescript;
+    setDefaults (): void {
+        this.template             = this.template || 'typescript';
+        this.createGithubWorkflow = this.createGithubWorkflow !== null ? this.createGithubWorkflow : true;
+        this.runNpmInstall        = this.runNpmInstall !== null ? this.runNpmInstall : true;
     }
 
     validateAll (): void {
@@ -42,7 +42,7 @@ export default class InitOptions {
         if (!value)
             throw new Error(`Invalid tests folder path: "${ value }"`);
 
-        const testsFolderPath = path.join(this.rootPath, this.appPath, value);
+        const testsFolderPath = path.join(this.rootPath, value);
 
         if (!fs.existsSync(testsFolderPath))
             return true;
@@ -57,8 +57,7 @@ export default class InitOptions {
     }
 
     private _ensureTemplateValid (): void {
-        if (!(this.template in TEMPLATES))
+        if (!this.template || !(this.template in TEMPLATES))
             throw new Error(`Template prop must be one of ${ Object.keys(TEMPLATES).join(', ') }`);
-
     }
 }

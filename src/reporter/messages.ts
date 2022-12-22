@@ -1,8 +1,8 @@
+import { ACTIONS } from './actions';
 export const MESSAGES = {
-    cloneRepo:            'Cloning templates repo',
-    copyTemplate:         'Coping template files',
-    runNpmInstall:        'Running "npm install"',
-    updatePackageJson:    'Updating package.json',
-    createConfig:         'Creating configuration file',
-    createGithubWorkflow: 'Creating GitHub workflow',
+    [ACTIONS.copyTemplate]:         'Coping template files...',
+    [ACTIONS.runNpmInstall]:        'Running "npm install"...',
+    [ACTIONS.updatePackageJson]:    'Updating package.json...',
+    [ACTIONS.createConfig]:         'Creating configuration file...',
+    [ACTIONS.createGithubWorkflow]: 'Creating GitHub workflow...',
 };

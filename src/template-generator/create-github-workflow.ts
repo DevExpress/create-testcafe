@@ -29,16 +29,16 @@ const TEMPLATE = 'name: Tests\n' +
 const WORKFLOW_PATH = './.github/workflows';
 
 function getFreeName (): string {
-    return 'test.yml';
+    return 'testcafe.yml';
 }
 
-export function createGithubWorkflow ({ testScriptName, appPath, rootPath }: InitOptions): void {
+export function createGithubWorkflow ({ testScriptName, rootPath }: InitOptions): void {
     const content          = TEMPLATE.replace('${testScriptName}', testScriptName);
     const fileName         = getFreeName();
-    const workflowFullPath = path.join(rootPath, appPath, WORKFLOW_PATH);
+    const workflowFullPath = path.join(rootPath, WORKFLOW_PATH);
 
     if (!fs.existsSync(workflowFullPath))
         fs.mkdirSync(workflowFullPath, { recursive: true });
 
-    return fs.writeFileSync(path.join(rootPath, appPath, WORKFLOW_PATH, fileName), content);
+    return fs.writeFileSync(path.join(rootPath, WORKFLOW_PATH, fileName), content);
 }

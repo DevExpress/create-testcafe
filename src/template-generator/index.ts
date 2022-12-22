@@ -5,13 +5,12 @@ import InitOptions from '../options/init-options';
 import updatePackageJson from './update-package-json';
 import createConfig from './create-config';
 import Reporter from '../reporter';
-import { MESSAGES } from '../reporter/messages';
 import { createGithubWorkflow } from './create-github-workflow';
+import { ACTIONS } from '../reporter/actions';
 
-const TMP_DIR_NAME        = 'testcafe_init_tmp';
-const CLONE_REPO_COMMAND  = `git clone --depth 1 https://github.com/Artem-Babich/testcafe-templates ${ TMP_DIR_NAME }`;
-const NPM_INSTALL_COMMAND = `npm install`;
-const DEFAULT_TESTS_PATH  = 'tests';
+const NPM_INSTALL_COMMAND  = `npm install`;
+const DEFAULT_TESTS_PATH   = 'tests';
+const TEMPLATES_SRC_FOLDER = path.join(__dirname, '..', 'templates');
 
 export default class TemplateGenerator {
     private readonly initOptions: InitOptions;
@@ -20,31 +19,22 @@ export default class TemplateGenerator {
     constructor (options: InitOptions, reporter: Reporter) {
         this.initOptions = options;
         this.reporter    = reporter;
-
-        this.initOptions.setUnsetOptionsToDefaults();
-        this.initOptions.validateAll();
     }
 
     async run (): Promise<void> {
-        try {
-            await this._cloneRepo();
-            await this._copyTemplateFiles();
-            await this._createConfigFile();
-            await this._updatePackageJson();
+        this.reporter.reportTemplateInitStarted(this.initOptions);
 
-            if (this.initOptions.createGithubWorkflow)
-                await this._createGitHubWorkflow();
+        await this._copyTemplateFiles();
+        await this._createConfigFile();
+        await this._updatePackageJson();
 
-            if (this.initOptions.runNpmInstall)
-                await this._runNpmInstall();
+        if (this.initOptions.createGithubWorkflow)
+            await this._createGitHubWorkflow();
 
-            await this._removeTmpDir();
-        }
-        catch (err) {
-            await this._removeTmpDir();
+        if (this.initOptions.runNpmInstall)
+            await this._runNpmInstall();
 
-            throw err;
-        }
+        this.reporter.reportTemplateInitSuccess(this.initOptions);
     }
 
     private _runCommand (command: string): Buffer {
@@ -52,71 +42,56 @@ export default class TemplateGenerator {
     }
 
     private async _copyTemplateFiles (): Promise<void> {
-        this.reporter.log(MESSAGES.copyTemplate);
+        this.reporter.reportActionStarted(ACTIONS.copyTemplate);
 
-        const templateFolderPath = path.join(this.initOptions.rootPath, TMP_DIR_NAME, this.initOptions.template);
-        let srcPaths             = await fs.promises.readdir(templateFolderPath);
+        const srcFolderPath = path.join(TEMPLATES_SRC_FOLDER, this.initOptions.template as string);
+        let srcPaths        = await fs.promises.readdir(srcFolderPath);
 
-        srcPaths = this._preparePathsForMerging(srcPaths);
+        srcPaths = this._resolveConflicts(srcPaths);
 
         let distPaths = this._patchTestFolderPaths(srcPaths);
 
-        srcPaths  = srcPaths.map(p => path.join(templateFolderPath, p));
-        distPaths = distPaths.map(p => path.join(this.initOptions.rootPath, this.initOptions.appPath, p));
+        srcPaths  = srcPaths.map(p => path.join(srcFolderPath, p));
+        distPaths = distPaths.map(p => path.join(this.initOptions.rootPath, p));
 
         for (let i = 0; i < srcPaths.length; i++)
             await fs.promises.cp(srcPaths[i], distPaths[i], { recursive: true });
     }
 
     private _updatePackageJson (): Promise<void> {
-        this.reporter.log(MESSAGES.updatePackageJson);
+        this.reporter.reportActionStarted(ACTIONS.updatePackageJson);
 
         return updatePackageJson(this.initOptions);
     }
 
     private _createConfigFile (): Promise<void> {
-        this.reporter.log(MESSAGES.createConfig);
+        this.reporter.reportActionStarted(ACTIONS.createConfig);
 
         return createConfig(this.initOptions);
     }
 
-    private _preparePathsForMerging (paths: string[]): string[] {
-        if (this.initOptions.projectType)
+    private _resolveConflicts (paths: string[]): string[] {
+        if (fs.existsSync(path.join(this.initOptions.rootPath, 'package.json')))
             return paths.filter(p => p !== 'package.json');
 
         return paths;
     }
 
-    private _ensureTmpDirNotExists (): void {
-        if (fs.existsSync(TMP_DIR_NAME))
-            throw new Error(`Already exists: ${ TMP_DIR_NAME }`);
-    }
-
-    private _removeTmpDir (): Promise<void> {
-        return fs.promises.rm(TMP_DIR_NAME, { recursive: true });
-    }
-
     private _patchTestFolderPaths (paths: string[]): string[] {
-        return paths.map(p => p.replace(DEFAULT_TESTS_PATH, this.initOptions.testFolder));
-    }
-
-    private _cloneRepo (): void {
-        this.reporter.log(MESSAGES.cloneRepo);
-
-        this._ensureTmpDirNotExists();
-        this._runCommand(CLONE_REPO_COMMAND);
+        return paths.map(p => p === DEFAULT_TESTS_PATH ? this.initOptions.testFolder : p);
     }
 
     private _runNpmInstall (): void {
-        this.reporter.log(MESSAGES.runNpmInstall);
+        this.reporter.reportActionStarted(ACTIONS.runNpmInstall);
 
-        const command = `cd ${ this.initOptions.appPath } && ${ NPM_INSTALL_COMMAND }`;
+        const appPath = path.relative(process.cwd(), this.initOptions.rootPath);
+        const command = `cd ${ appPath } && ${ NPM_INSTALL_COMMAND }`;
 
         this._runCommand(command);
     }
 
     private async _createGitHubWorkflow (): Promise<void> {
-        this.reporter.log(MESSAGES.createGithubWorkflow);
+        this.reporter.reportActionStarted(ACTIONS.createGithubWorkflow);
 
         return createGithubWorkflow(this.initOptions);
     }
