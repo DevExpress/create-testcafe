@@ -9,8 +9,9 @@
     "lint": "eslint src/**/*.ts test/**/*.js",
     "clean": "rimraf dist",
     "compile": "tsc",
+    "copy-templates": "copyfiles \"./templates/**/*.*\" dist",
     "reinstall": "npm uninstall -g create-testcafe && npm i -g",
-    "fast-build": "npm run clean && npm run compile && npm run reinstall",
+    "fast-build": "npm run clean && npm run compile && npm run copy-templates && npm run reinstall",
     "build": "npm run lint && npm run fast-build",
     "test-mocha": "npx mocha 'test/**/*test.js'",
     "test": "npm run build && npm run test-mocha"
@@ -27,6 +28,7 @@
     "eslint": "8.22.0",
     "mocha": "^10.2.0",
     "rimraf": "^3.0.2",
+    "copyfiles": "^2.4.1",
     "typescript": "^4.9.4"
   },
   "dependencies": {

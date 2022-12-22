@@ -1,6 +1,5 @@
 import InitOptions from '../options/init-options';
 import PackageJson from '@npmcli/package-json';
-import path from 'path';
 
 const TEST_SCRIPT = 'testcafe';
 
@@ -12,14 +11,14 @@ function getEmptyTestScriptName (pkgJson: PackageJson): string {
 }
 
 function buildArgsString (options: InitOptions): string {
-    if (options.configFileName)
+    if (options.configFileName !== '.testcaferc.js')
         return ` --config-file ${ options.configFileName }`;
 
     return '';
 }
 
 export default async function updatePackageJson (options: InitOptions): Promise<void> {
-    const pkgJson             = await PackageJson.load(path.join(options.rootPath, options.appPath));
+    const pkgJson             = await PackageJson.load(options.rootPath);
     const testScriptName      = getEmptyTestScriptName(pkgJson);
     const testScriptArguments = buildArgsString(options);
     const testScript          = `${ TEST_SCRIPT }${ testScriptArguments }`;

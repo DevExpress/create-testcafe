@@ -13,8 +13,13 @@ const reporter = new Reporter();
 Promise.resolve()
     .then(() => setCliOptions(options))
     .then(() => setEnvironmentOptions(options))
-    .then(() => !options.silent ? runWizard(options) : null)
+    .then(() => options.setDefaults())
+    .then(() => options.runWizard ? runWizard(options) : null)
+    .then(() => options.validateAll())
     .then(() => new TemplateGenerator(options, reporter))
     .then(generator => generator.run())
-    .then(() => reporter.log(`Success! Run "npm run ${ options.testScriptName }" to start example tests`))
-    .catch(err => reporter.error(err));
+    .catch(err => {
+        reporter.error(err);
+
+        throw err;
+    });
