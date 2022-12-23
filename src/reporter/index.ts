@@ -8,9 +8,13 @@ import {
     red,
     white,
     yellowBright,
+    italic,
+    bgWhite,
 } from 'chalk';
 import { MESSAGES } from './messages';
 import path from 'path';
+
+const TESTCAFE_LOGO = bgWhite(`${ bold(blue('✔ Test')) }${ italic(black('Café')) }`);
 
 export default class Reporter {
     reportActionStarted (action: string): void {
@@ -25,7 +29,7 @@ export default class Reporter {
     }
 
     reportTemplateInitStarted ({ rootPath }: InitOptions): void {
-        console.log(yellowBright(`Initializing ${ bold(blue('✔ Test')) }${ black('Café') } project in '${ white(rootPath) }'\n`));
+        console.log(yellowBright(`Initializing ${ TESTCAFE_LOGO } project in '${ white(rootPath) }'\n`));
     }
 
     reportTemplateInitSuccess ({ testScriptName, runNpmInstall, rootPath, configFileName }: InitOptions): void {
@@ -36,8 +40,8 @@ export default class Reporter {
         command = runNpmInstall ? command : `${ yellowBright('npm') } ${ white('i') } ${ ampersand } ${ command }`;
         command = !appPath ? command : `${ yellowBright('cd') } ${ white(appPath) } ${ ampersand } ${ command }`;
 
-        console.log(`${ green(bold('✔ Success!')) } ${ bold(`Created a TestCafe project at '${ rootPath }'`) }`);
-        console.log(bold(`You can choose the browser and tests source in the ${ configFileName } configuration file.`));
-        console.log(bold(`Run the following command to run tests: ${ command }\n`));
+        console.log(`${ green(bold('✔ Success!')) } ${ yellowBright(`Created a ${ TESTCAFE_LOGO } project at '${ white(rootPath) }'`) }`);
+        console.log(yellowBright(`You can choose the browser and tests source in the ${ white(configFileName) } configuration file.`));
+        console.log(yellowBright(`Run the following command to run tests: ${ command }\n`));
     }
 }
