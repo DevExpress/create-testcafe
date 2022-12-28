@@ -44,7 +44,7 @@ function cleanProjectFolder () {
 
 const EXCLUDE_PATTERNS = [
     /.*[/\\]node_modules[/\\].*/,
-    /.*[/\\]package-lock.json/,
+    /.*package-lock.json/,
 ];
 
 async function getFiles (dir) {
@@ -65,7 +65,6 @@ describe('Installation', function () {
         before(() => initProject({
             template:                   'javascript',
             ['test-folder']:            'custom-test',
-            ['run-npm-install']:        false,
             ['create-github-workflow']: true,
         }));
 
@@ -91,7 +90,6 @@ describe('Installation', function () {
     describe('Clean installation TS', () => {
         before(() => initProject({
             template:                   'typescript',
-            ['run-npm-install']:        false,
             ['create-github-workflow']: false,
         }));
 
@@ -119,7 +117,6 @@ describe('Installation', function () {
                 template:                   'javascript',
                 ['test-folder']:            'tests',
                 ['create-github-workflow']: true,
-                ['run-npm-install']:        false,
                 ['run-wizard']:             false,
             });
         });

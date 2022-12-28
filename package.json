@@ -6,7 +6,7 @@
     "create-testcafe": "./dist/bin.js"
   },
   "scripts": {
-    "lint": "eslint src/**/*.ts test/**/*.js --fix",
+    "lint": "eslint src/**/*.ts test/**/*.js",
     "clean": "rimraf dist",
     "compile": "tsc",
     "copy-templates": "copyfiles -a \"./templates/**/*.*\" dist",
