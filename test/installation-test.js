@@ -56,7 +56,7 @@ async function getFiles (dir) {
 
 describe('Installation', function () {
 
-    describe('Clean installation JS', () => {
+    describe.only('Clean installation JS', () => {
         beforeAll(() => {
             initProject({
                 template:                   'javascript',
