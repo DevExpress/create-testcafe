@@ -1,7 +1,8 @@
 export const ACTIONS = {
-    copyTemplate:         'copyTemplate',
-    runNpmInstall:        'runNpmInstall"',
-    updatePackageJson:    'updatePackageJson',
-    createConfig:         'createConfig',
-    createGithubWorkflow: 'createGithubWorkflow',
+    copyTemplate:              'copyTemplate',
+    installAllDependencies:    'installAllDependencies"',
+    installTestCafeGlobally:   'installTestCafeGlobally"',
+    addTestcafeToDependencies: 'addTestcafeToDependencies',
+    createConfig:              'createConfig',
+    createGithubWorkflow:      'createGithubWorkflow',
 };

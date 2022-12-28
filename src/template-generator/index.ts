@@ -1,99 +1,101 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync } from 'child_process';
 import InitOptions from '../options/init-options';
-import updatePackageJson from './update-package-json';
 import createConfig from './create-config';
 import Reporter from '../reporter';
-import { createGithubWorkflow } from './create-github-workflow';
 import { ACTIONS } from '../reporter/actions';
+import { prompt } from 'inquirer';
+import { pathExists, readDir } from '../utils';
+import { packageManager } from '../package-manager';
+import { execSync } from 'child_process';
 
-const NPM_INSTALL_COMMAND  = `npm install`;
-const DEFAULT_TESTS_PATH   = 'tests';
-const TEMPLATES_SRC_FOLDER = path.join(__dirname, '..', 'templates');
+const DEFAULT_TESTS_PATH_REGEX   = /tests[/\\].*/;
+const GITHUB_WORKFLOW_PATH_REGEX = /\.github[/\\].*/;
+const PACKAGE_JSON_NAME          = /package.json/;
+const TEMPLATES_SRC_FOLDER       = path.join(__dirname, '..', 'templates');
 
 export default class TemplateGenerator {
-    private readonly initOptions: InitOptions;
+    private readonly options: InitOptions;
     private readonly reporter: Reporter;
 
     constructor (options: InitOptions, reporter: Reporter) {
-        this.initOptions = options;
-        this.reporter    = reporter;
+        this.options  = options;
+        this.reporter = reporter;
     }
 
     async run (): Promise<void> {
-        this.reporter.reportTemplateInitStarted(this.initOptions);
+        this.reporter.reportTemplateInitStarted(this.options);
 
         await this._copyTemplateFiles();
-        await this._createConfigFile();
-        await this._updatePackageJson();
 
-        if (this.initOptions.createGithubWorkflow)
-            await this._createGitHubWorkflow();
+        if (!this.options.tcConfigType)
+            await this._createConfigFile();
 
-        if (this.initOptions.runNpmInstall)
-            await this._runNpmInstall();
+        this.reporter.reportActionStarted(ACTIONS.installTestCafeGlobally);
+        this._executeCommand(packageManager.installGlobally('testcafe'));
 
-        this.reporter.reportTemplateInitSuccess(this.initOptions);
-    }
+        if (this.options.projectType) {
+            this.reporter.reportActionStarted(ACTIONS.addTestcafeToDependencies);
+            this._executeCommand(packageManager.installDevDependency('testcafe'));
+        }
 
-    private _runCommand (command: string): Buffer {
-        return execSync(command, { stdio: 'inherit' });
+        this.reporter.reportTemplateInitSuccess(this.options);
     }
 
     private async _copyTemplateFiles (): Promise<void> {
         this.reporter.reportActionStarted(ACTIONS.copyTemplate);
 
-        const srcFolderPath = path.join(TEMPLATES_SRC_FOLDER, this.initOptions.template as string);
-        let srcPaths        = await fs.promises.readdir(srcFolderPath);
+        const srcFolderPath = path.join(TEMPLATES_SRC_FOLDER, this.options.template as string);
+        const paths         = await this._prepareFilePaths(srcFolderPath);
 
-        srcPaths = this._resolveConflicts(srcPaths);
-
-        let distPaths = this._patchTestFolderPaths(srcPaths);
-
-        srcPaths  = srcPaths.map(p => path.join(srcFolderPath, p));
-        distPaths = distPaths.map(p => path.join(this.initOptions.rootPath, p));
-
-        for (let i = 0; i < srcPaths.length; i++)
-            await fs.promises.cp(srcPaths[i], distPaths[i], { recursive: true });
-    }
-
-    private _updatePackageJson (): Promise<void> {
-        this.reporter.reportActionStarted(ACTIONS.updatePackageJson);
-
-        return updatePackageJson(this.initOptions);
+        for (const [ srcPath, distPath ] of paths)
+            await fs.promises.cp(srcPath, distPath);
     }
 
     private _createConfigFile (): Promise<void> {
         this.reporter.reportActionStarted(ACTIONS.createConfig);
 
-        return createConfig(this.initOptions);
+        return createConfig(this.options);
     }
 
-    private _resolveConflicts (paths: string[]): string[] {
-        if (fs.existsSync(path.join(this.initOptions.rootPath, 'package.json')))
-            return paths.filter(p => p !== 'package.json');
+    private async _prepareFilePaths (srcFolderPath: string): Promise<Map<string, string>> {
+        const result   = new Map<string, string>();
+        const srcPaths = await readDir(srcFolderPath)
+            .then(paths => paths.map(p => path.relative(srcFolderPath, p)));
 
-        return paths;
+        for (const p of srcPaths) {
+            if (PACKAGE_JSON_NAME.test(p) && this.options.projectType)
+                continue;
+
+            if (GITHUB_WORKFLOW_PATH_REGEX.test(p) && !this.options.createGithubWorkflow)
+                continue;
+
+            if (DEFAULT_TESTS_PATH_REGEX.test(p) && !this.options.addTests)
+                continue;
+
+            const distPath = DEFAULT_TESTS_PATH_REGEX.test(p)
+                ? path.join(this.options.rootPath, this.options.testFolder, ...p.split(path.sep).slice(1))
+                : path.join(this.options.rootPath, p);
+
+            if (await pathExists(distPath)) {
+                const { override } = await prompt({
+                    type:    'confirm',
+                    message: `The following file is already exists: ${ distPath }.\nDo you want to override it?`,
+                    name:    'override',
+                });
+
+                if (!override)
+                    continue;
+            }
+
+            result.set(path.join(srcFolderPath, p), distPath);
+        }
+
+        return result;
     }
 
-    private _patchTestFolderPaths (paths: string[]): string[] {
-        return paths.map(p => p === DEFAULT_TESTS_PATH ? this.initOptions.testFolder : p);
-    }
-
-    private _runNpmInstall (): void {
-        this.reporter.reportActionStarted(ACTIONS.runNpmInstall);
-
-        const appPath = path.relative(process.cwd(), this.initOptions.rootPath);
-        const command = `cd ${ appPath } && ${ NPM_INSTALL_COMMAND }`;
-
-        this._runCommand(command);
-    }
-
-    private async _createGitHubWorkflow (): Promise<void> {
-        this.reporter.reportActionStarted(ACTIONS.createGithubWorkflow);
-
-        return createGithubWorkflow(this.initOptions);
+    _executeCommand (command: string): void {
+        execSync(command, { cwd: this.options.rootPath });
     }
 }
 

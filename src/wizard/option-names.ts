@@ -3,4 +3,5 @@ export const OPTIONS_NAMES = {
     testFolder:           'testFolder',
     runNpmInstall:        'runNpmInstall',
     createGithubWorkflow: 'createGithubWorkflow',
+    addTests:             'addTests',
 };
