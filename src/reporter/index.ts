@@ -30,8 +30,12 @@ export default class Reporter {
         console.error(err);
     }
 
-    reportTemplateInitStarted ({ rootPath }: InitOptions): void {
-        console.log(yellowBright(`Initializing ${ TESTCAFE_LOGO } project in '${ white(rootPath) }'\n`));
+    reportTemplateInitStarted ({ rootPath, template, testFolder, addTests, createGithubWorkflow }: InitOptions): void {
+        console.log(yellowBright(`Initializing ${ TESTCAFE_LOGO } project in '${ white(rootPath) }' with the following options:`));
+        console.log(`${ yellowBright('Template') } ${ template }`);
+        console.log(`${ yellowBright('Tests folder') } ${ testFolder }`);
+        console.log(`${ yellowBright('Add basic tests suite') } ${ addTests }`);
+        console.log(`${ yellowBright('Create GitHub workflow') } ${ createGithubWorkflow }\n`);
     }
 
     _buildRunCommand ({ tcConfigType, testFolder }: InitOptions): string {
