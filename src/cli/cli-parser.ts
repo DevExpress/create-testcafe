@@ -26,7 +26,7 @@ export default function setRunArgs (options: InitOptions): Promise<void> {
         .option(OPTION_NAMES.testFolder, { type: 'string', require: false })
         .option(OPTION_NAMES.runWizard, { type: 'boolean', require: false, alias: 'w' })
         .option(OPTION_NAMES.createGithubWorkflow, { type: 'boolean', require: false })
-        .option(OPTION_NAMES.runNpmInstall, { type: 'boolean', require: false })
+        .option(OPTION_NAMES.addTests, { type: 'boolean', require: false })
         .argv,
     )
         .then(args => prepareArgs(args))

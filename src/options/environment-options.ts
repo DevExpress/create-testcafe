@@ -1,11 +1,11 @@
 import path from 'path';
-import * as fs from 'fs';
 import InitOptions from './init-options';
 import { ProjectTemplate } from '../interfaces';
+import { pathExists } from '../utils';
 
-function resolveProjectType (rootPath: string): ProjectTemplate | null {
-    const packageJsonExists = fs.existsSync(path.join(rootPath, 'package.json'));
-    const tsConfigExists    = packageJsonExists && fs.existsSync(path.join(rootPath, '.tsconfig.json'));
+async function resolveProjectType (rootPath: string): Promise<ProjectTemplate | null> {
+    const packageJsonExists = await pathExists(path.join(rootPath, 'package.json'));
+    const tsConfigExists    = packageJsonExists && await pathExists(path.join(rootPath, '.tsconfig.json'));
 
     if (tsConfigExists)
         return 'typescript';
@@ -16,10 +16,19 @@ function resolveProjectType (rootPath: string): ProjectTemplate | null {
     return null;
 }
 
-export default function setEnvironmentOptions (options: InitOptions): void {
-    const projectType = resolveProjectType(options.rootPath);
-    const template    = options.template || projectType;
-    const runWizard   = options.runWizard !== null ? options.runWizard : !!projectType;
+async function resolveTestCafeConfigType (rootPath: string): Promise<'js' | 'json' | null> {
+    if (await pathExists(path.join(rootPath, '.testcaferc.js')))
+        return 'js';
 
-    options.merge({ template, runWizard });
+    if (await pathExists(path.join(rootPath, '.testcaferc.json')))
+        return 'json';
+
+    return null;
+}
+
+export default async function setEnvironmentOptions (options: InitOptions): Promise<void> {
+    const projectType   = await resolveProjectType(options.rootPath);
+    const tcConfigType = await resolveTestCafeConfigType(options.rootPath);
+
+    options.merge({ projectType, tcConfigType });
 }

@@ -5,13 +5,13 @@ import fs from 'fs';
 
 export default class InitOptions {
     template: ProjectTemplate | null = null;
+    projectType: ProjectTemplate | null = null;
+    tcConfigType: 'js' | 'json' | null = null;
     runWizard: boolean | null = null;
-    runNpmInstall: boolean | null = null;
     createGithubWorkflow: boolean | null = null;
     rootPath = process.cwd();
     testFolder = 'tests';
-    testScriptName = 'test';
-    configFileName = '';
+    addTests = true;
 
     constructor (opts?: Dictionary<any>) {
         this.merge(opts);
@@ -28,9 +28,9 @@ export default class InitOptions {
     }
 
     setDefaults (): void {
-        this.template             = this.template || 'typescript';
+        this.template             = this.template || this.projectType || 'typescript';
+        this.runWizard            = this.runWizard !== null ? this.runWizard : !!this.projectType;
         this.createGithubWorkflow = this.createGithubWorkflow !== null ? this.createGithubWorkflow : true;
-        this.runNpmInstall        = this.runNpmInstall !== null ? this.runNpmInstall : true;
     }
 
     validateAll (): void {

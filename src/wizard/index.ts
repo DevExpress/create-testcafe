@@ -1,5 +1,5 @@
 import InitOptions from '../options/init-options';
-import { prompt } from 'enquirer';
+import { prompt } from 'inquirer';
 import { buildQuestions } from './questions';
 
 
