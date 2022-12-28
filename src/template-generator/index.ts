@@ -9,8 +9,8 @@ import { pathExists, readDir } from '../utils';
 import { packageManager } from '../package-manager';
 import { execSync } from 'child_process';
 
-const DEFAULT_TESTS_PATH_REGEX   = /tests\\.*/;
-const GITHUB_WORKFLOW_PATH_REGEX = /\.github\\.*/;
+const DEFAULT_TESTS_PATH_REGEX   = /tests[/\\].*/;
+const GITHUB_WORKFLOW_PATH_REGEX = /\.github[/\\].*/;
 const PACKAGE_JSON_NAME          = /package.json/;
 const TEMPLATES_SRC_FOLDER       = path.join(__dirname, '..', 'templates');
 
