@@ -1,14 +1,8 @@
-const {
-    describe,
-    it,
-    before,
-    after,
-} = require('mocha');
+const { describe, expect, it, afterAll, beforeAll } = require('@jest/globals');
 
-const fs = require('fs/promises');
+const fs = require('fs');
 
 const childProcess = require('child_process');
-const { expect }   = require('chai');
 const path         = require('path');
 
 const PROJECT_FOLDER = 'tmp_test_project';
@@ -18,13 +12,15 @@ function initProject (args) {
         .map(([key, value]) => `--${ key } ${ value }`)
         .join(' ');
 
+    console.log(`Running: npm init testcafe ${ PROJECT_FOLDER } -- ${ argsString }`);
+
     return childProcess.spawnSync(`npm init testcafe ${ PROJECT_FOLDER } -- ${ argsString }`, {
         stdio: 'inherit',
         shell: true,
     });
 }
 
-async function preinitProject () {
+function preinitProject () {
     const packageJsonContent = '{\n' +
                                '  "name": "data",\n' +
                                '  "version": "1.0.0",\n' +
@@ -33,13 +29,13 @@ async function preinitProject () {
                                '  }\n' +
                                '}';
 
-    await fs.mkdir(PROJECT_FOLDER);
-    await fs.writeFile(path.join(PROJECT_FOLDER, 'package.json'), packageJsonContent);
-    await fs.writeFile(path.join(PROJECT_FOLDER, '.testcaferc.js'), '');
+    fs.mkdirSync(PROJECT_FOLDER);
+    fs.writeFileSync(path.join(PROJECT_FOLDER, 'package.json'), packageJsonContent);
+    fs.writeFileSync(path.join(PROJECT_FOLDER, '.testcaferc.js'), '');
 }
 
 function cleanProjectFolder () {
-    return fs.rmdir(PROJECT_FOLDER, { recursive: true });
+    return fs.rmdirSync(PROJECT_FOLDER, { recursive: true });
 }
 
 const EXCLUDE_PATTERNS = [
@@ -48,7 +44,7 @@ const EXCLUDE_PATTERNS = [
 ];
 
 async function getFiles (dir) {
-    const dirents = await fs.readdir(dir, { withFileTypes: true });
+    const dirents = await fs.promises.readdir(dir, { withFileTypes: true });
     const files   = await Promise.all(dirents.map((dirent) => {
         const res = path.join(dir, dirent.name);
 
@@ -59,16 +55,17 @@ async function getFiles (dir) {
 }
 
 describe('Installation', function () {
-    this.timeout(30000);
 
     describe('Clean installation JS', () => {
-        before(() => initProject({
-            template:                   'javascript',
-            ['test-folder']:            'custom-test',
-            ['create-github-workflow']: true,
-        }));
+        beforeAll(() => {
+            initProject({
+                template:                   'javascript',
+                ['test-folder']:            'custom-test',
+                ['create-github-workflow']: true,
+            });
+        });
 
-        after(() => cleanProjectFolder());
+        afterAll(() => cleanProjectFolder());
 
         it('Project structure', async () => {
             const files = await getFiles(PROJECT_FOLDER);
@@ -82,18 +79,20 @@ describe('Installation', function () {
                 path.join(PROJECT_FOLDER, 'package.json'),
             ];
 
-            expect(files).deep.equal(expectedResult);
+            expect(files).toEqual(expectedResult);
         });
     });
 
 
     describe('Clean installation TS', () => {
-        before(() => initProject({
-            template:                   'typescript',
-            ['create-github-workflow']: false,
-        }));
+        beforeAll(() => {
+            initProject({
+                template:                   'typescript',
+                ['create-github-workflow']: false,
+            });
+        });
 
-        after(() => cleanProjectFolder());
+        afterAll(() => cleanProjectFolder());
 
         it('Project structure', async () => {
             const files = await getFiles(PROJECT_FOLDER);
@@ -105,15 +104,15 @@ describe('Installation', function () {
                 path.join(PROJECT_FOLDER, 'tests', 'test.ts'),
             ];
 
-            expect(files).deep.equal(expectedResult);
+            expect(files).toEqual(expectedResult);
         });
     });
 
     describe('Installation to the existing JS project', () => {
-        before(async () => {
-            await preinitProject();
+        beforeAll(() => {
+            preinitProject();
 
-            return initProject({
+            initProject({
                 template:                   'javascript',
                 ['test-folder']:            'tests',
                 ['create-github-workflow']: true,
@@ -121,7 +120,7 @@ describe('Installation', function () {
             });
         });
 
-        after(() => cleanProjectFolder());
+        afterAll(() => cleanProjectFolder());
 
         it('Project structure', async () => {
             const files = await getFiles(PROJECT_FOLDER);
@@ -134,14 +133,14 @@ describe('Installation', function () {
                 path.join(PROJECT_FOLDER, 'tests', 'test.js'),
             ];
 
-            expect(files).deep.equal(expectedResult);
+            expect(files).toEqual(expectedResult);
         });
 
-        it('Package JSON', async () => {
-            const pkgJsonString = await fs.readFile(path.join(PROJECT_FOLDER, 'package.json'), { encoding: 'utf-8' });
+        it('Package JSON', () => {
+            const pkgJsonString = fs.readFileSync(path.join(PROJECT_FOLDER, 'package.json'), { encoding: 'utf-8' });
             const pkgJson       = JSON.parse(pkgJsonString);
 
-            expect(pkgJson?.devDependencies?.testcafe).to.not.equal(null);
+            expect(pkgJson?.devDependencies?.testcafe).toBeDefined();
         });
     });
 //
