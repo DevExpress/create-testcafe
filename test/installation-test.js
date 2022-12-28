@@ -43,8 +43,8 @@ function cleanProjectFolder () {
 }
 
 const EXCLUDE_PATTERNS = [
-    /.*\\node_modules\\.*/,
-    /.*\\package-lock.json/,
+    /.*[/\\]node_modules[/\\].*/,
+    /.*[/\\]package-lock.json/,
 ];
 
 async function getFiles (dir) {
