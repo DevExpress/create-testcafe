@@ -1,7 +1,11 @@
-const { describe, expect, it, afterAll, beforeAll } = require('@jest/globals');
-
-const fs = require('fs');
-
+const {
+    describe,
+    it,
+    afterAll,
+    beforeAll,
+    expect,
+}            = require('@jest/globals');
+const fs           = require('fs');
 const childProcess = require('child_process');
 const path         = require('path');
 
@@ -56,7 +60,7 @@ async function getFiles (dir) {
 
 describe('Installation', function () {
 
-    describe.only('Clean installation JS', () => {
+    describe('Clean installation JS', () => {
         beforeAll(() => {
             initProject({
                 template:                   'javascript',
