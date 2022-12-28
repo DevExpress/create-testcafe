@@ -4,4 +4,5 @@ export const OPTION_NAMES = {
     runWizard:            'run-wizard',
     runNpmInstall:        'run-npm-install',
     createGithubWorkflow: 'create-github-workflow',
+    addTests:             'add-tests',
 };

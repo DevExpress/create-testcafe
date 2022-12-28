@@ -13,8 +13,10 @@ import {
 } from 'chalk';
 import { MESSAGES } from './messages';
 import path from 'path';
+// @ts-ignore
+import OS from 'os-family';
 
-const TESTCAFE_LOGO = bgWhite(`${ bold(blue('✔ Test')) }${ italic(black('Café')) }`);
+const TESTCAFE_LOGO = bgWhite(` ${ bold(blue('✔ Test')) }${ italic(black('Café')) } `);
 
 export default class Reporter {
     reportActionStarted (action: string): void {
@@ -32,16 +34,23 @@ export default class Reporter {
         console.log(yellowBright(`Initializing ${ TESTCAFE_LOGO } project in '${ white(rootPath) }'\n`));
     }
 
-    reportTemplateInitSuccess ({ testScriptName, runNpmInstall, rootPath, configFileName }: InitOptions): void {
-        const appPath   = path.relative(process.cwd(), rootPath);
-        const ampersand = gray('&&');
-        let command     = `${ yellowBright('npm') } ${ white(`run ${ testScriptName }`) }`;
+    _buildRunCommand ({ tcConfigType, testFolder }: InitOptions): string {
+        const browser = OS.mac ? 'safari' : 'chrome';
 
-        command = runNpmInstall ? command : `${ yellowBright('npm') } ${ white('i') } ${ ampersand } ${ command }`;
-        command = !appPath ? command : `${ yellowBright('cd') } ${ white(appPath) } ${ ampersand } ${ command }`;
+        return tcConfigType ? `testcafe ${ white(`${ browser } "${ testFolder }"`) }` : 'testcafe';
+    }
 
-        console.log(`${ green(bold('✔ Success!')) } ${ yellowBright(`Created a ${ TESTCAFE_LOGO } project at '${ white(rootPath) }'`) }`);
-        console.log(yellowBright(`You can choose the browser and tests source in the ${ white(configFileName) } configuration file.`));
-        console.log(yellowBright(`Run the following command to run tests: ${ command }\n`));
+    reportTemplateInitSuccess (options: InitOptions): void {
+        const appPath                    = path.relative(process.cwd(), options.rootPath);
+        const ampersand                  = gray('&&');
+        const moveToProjectFolderCommand = appPath ? `${ yellowBright('cd') } ${ white(appPath) }` : '';
+        const runTestcafeCommand         = this._buildRunCommand(options);
+
+        const fullCommand = [ moveToProjectFolderCommand, runTestcafeCommand ].filter(c => !!c).join(` ${ ampersand } `);
+
+        console.log(`${ green(bold('✔ Success!')) } ${ yellowBright(`Created a ${ TESTCAFE_LOGO } project at '${ white(options.rootPath) }'`) }`);
+        console.log(yellowBright(`All the testcafe options can be applied in the ${ white(`.testcaferc.${ options.tcConfigType || 'js' }`) } configuration file: https://testcafe.io/documentation/402638/reference/configuration-file`));
+        console.log(yellowBright(`As well as through CLI: https://testcafe.io/documentation/402639/reference/command-line-interface`));
+        console.log(yellowBright(`Run the following command to run tests: ${ fullCommand }\n`));
     }
 }

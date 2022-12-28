@@ -6,10 +6,10 @@
     "create-testcafe": "./dist/bin.js"
   },
   "scripts": {
-    "lint": "eslint src/**/*.ts test/**/*.js",
+    "lint": "eslint src/**/*.ts test/**/*.js --fix",
     "clean": "rimraf dist",
     "compile": "tsc",
-    "copy-templates": "copyfiles \"./templates/**/*.*\" dist",
+    "copy-templates": "copyfiles -a \"./templates/**/*.*\" dist",
     "reinstall": "npm uninstall -g create-testcafe && npm i -g",
     "fast-build": "npm run clean && npm run compile && npm run copy-templates && npm run reinstall",
     "build": "npm run lint && npm run fast-build",
@@ -19,23 +19,23 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/inquirer": "^8.2.5",
     "@types/node": "^18.11.15",
     "@types/yargs": "^17.0.17",
-    "@types/npmcli__package-json": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
     "chai": "^4.3.7",
+    "copyfiles": "^2.4.1",
     "eslint": "8.22.0",
     "mocha": "^10.2.0",
     "rimraf": "^3.0.2",
-    "copyfiles": "^2.4.1",
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@npmcli/package-json": "^3.0.0",
-    "enquirer": "^2.3.6",
-    "os-family": "^1.1.0",
     "chalk": "^4.1.2",
+    "inquirer": "^8.2.5",
+    "os-family": "^1.1.0",
+    "yaml": "^2.2.0",
     "yargs": "^17.6.2"
   }
 }

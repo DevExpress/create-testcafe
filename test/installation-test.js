@@ -10,7 +10,6 @@ const fs = require('fs/promises');
 const childProcess = require('child_process');
 const { expect }   = require('chai');
 const path         = require('path');
-const PackageJson  = require('@npmcli/package-json');
 
 const PROJECT_FOLDER = 'tmp_test_project';
 
@@ -26,7 +25,13 @@ function initProject (args) {
 }
 
 async function preinitProject () {
-    const packageJsonContent = '{\n' + '  "name": "tests",\n' + '  "version": "1.0.0"\n' + '}\n';
+    const packageJsonContent = '{\n' +
+                               '  "name": "data",\n' +
+                               '  "version": "1.0.0",\n' +
+                               '  "scripts": {\n' +
+                               '    "test": "echo"\n' +
+                               '  }\n' +
+                               '}';
 
     await fs.mkdir(PROJECT_FOLDER);
     await fs.writeFile(path.join(PROJECT_FOLDER, 'package.json'), packageJsonContent);
@@ -37,6 +42,11 @@ function cleanProjectFolder () {
     return fs.rmdir(PROJECT_FOLDER, { recursive: true });
 }
 
+const EXCLUDE_PATTERNS = [
+    /.*\\node_modules\\.*/,
+    /.*\\package-lock.json/,
+];
+
 async function getFiles (dir) {
     const dirents = await fs.readdir(dir, { withFileTypes: true });
     const files   = await Promise.all(dirents.map((dirent) => {
@@ -45,11 +55,11 @@ async function getFiles (dir) {
         return dirent.isDirectory() ? getFiles(res) : res;
     }));
 
-    return files.flat();
+    return files.flat().filter(f => !EXCLUDE_PATTERNS.some(pattern => pattern.test(f)));
 }
 
 describe('Installation', function () {
-    this.timeout(10000);
+    this.timeout(30000);
 
     describe('Clean installation JS', () => {
         before(() => initProject({
@@ -63,6 +73,7 @@ describe('Installation', function () {
 
         it('Project structure', async () => {
             const files = await getFiles(PROJECT_FOLDER);
+
 
             const expectedResult = [
                 path.join(PROJECT_FOLDER, '.github', 'workflows', 'testcafe.yml'),
@@ -78,8 +89,6 @@ describe('Installation', function () {
 
 
     describe('Clean installation TS', () => {
-        this.timeout(20000);
-
         before(() => initProject({
             template:                   'typescript',
             ['run-npm-install']:        false,
@@ -122,7 +131,6 @@ describe('Installation', function () {
 
             const expectedResult = [
                 path.join(PROJECT_FOLDER, '.github', 'workflows', 'testcafe.yml'),
-                path.join(PROJECT_FOLDER, '.last.testcaferc.js'),
                 path.join(PROJECT_FOLDER, '.testcaferc.js'),
                 path.join(PROJECT_FOLDER, 'package.json'),
                 path.join(PROJECT_FOLDER, 'tests', 'page-model.js'),
@@ -133,10 +141,10 @@ describe('Installation', function () {
         });
 
         it('Package JSON', async () => {
-            const pkgJson = await PackageJson.load(PROJECT_FOLDER);
+            const pkgJsonString = await fs.readFile(path.join(PROJECT_FOLDER, 'package.json'), { encoding: 'utf-8' });
+            const pkgJson       = JSON.parse(pkgJsonString);
 
-            expect(pkgJson.content.scripts.test).equal('testcafe --config-file .last.testcaferc.js');
-            expect(pkgJson.content.devDependencies.testcafe).equal('*');
+            expect(pkgJson?.devDependencies?.testcafe).to.not.equal(null);
         });
     });
 //
