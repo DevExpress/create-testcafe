@@ -41,7 +41,7 @@ export default class Reporter {
     _buildRunCommand ({ tcConfigType, testFolder }: InitOptions): string {
         const browser = OS.mac ? 'safari' : 'chrome';
 
-        return tcConfigType ? `testcafe ${ white(`${ browser } "${ testFolder }"`) }` : 'testcafe';
+        return tcConfigType ? `testcafe ${ white(`${ browser } "${ testFolder }"`) }` : `testcafe ${browser}`;
     }
 
     reportTemplateInitSuccess (options: InitOptions): void {
