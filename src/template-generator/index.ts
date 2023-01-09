@@ -1,18 +1,23 @@
-import * as fs from 'fs';
+import fs from 'fs/promises';
 import * as path from 'path';
+import { prompt } from 'inquirer';
+import { execSync } from 'child_process';
+// @ts-ignore
+import OS from 'os-family';
 import InitOptions from '../options/init-options';
-import createConfig from './create-config';
+import createConfig from './testcafe-config';
 import Reporter from '../reporter';
 import { ACTIONS } from '../reporter/actions';
-import { prompt } from 'inquirer';
 import { pathExists, readDir } from '../utils';
 import { packageManager } from '../package-manager';
-import { execSync } from 'child_process';
+import { parse, stringify } from 'yaml';
+import { Dictionary } from '../interfaces';
 
 const DEFAULT_TESTS_PATH_REGEX   = /tests[/\\].*/;
 const GITHUB_WORKFLOW_PATH_REGEX = /\.github[/\\].*/;
 const PACKAGE_JSON_NAME          = /package.json/;
 const TEMPLATES_SRC_FOLDER       = path.join(__dirname, '..', 'templates');
+const WORKFLOW_PATH              = '.github/workflows/testcafe.yml';
 
 export default class TemplateGenerator {
     private readonly options: InitOptions;
@@ -26,17 +31,21 @@ export default class TemplateGenerator {
     async run (): Promise<void> {
         this.reporter.reportTemplateInitStarted(this.options);
 
+        if (this.options.createGithubWorkflow)
+            await this._updateGithubWorkflow();
+
         await this._copyTemplateFiles();
 
         if (!this.options.tcConfigType)
             await this._createConfigFile();
 
-        this.reporter.reportActionStarted(ACTIONS.installTestCafeGlobally);
-        this._executeCommand(packageManager.installGlobally('testcafe'));
-
         if (this.options.projectType) {
             this.reporter.reportActionStarted(ACTIONS.addTestcafeToDependencies);
             this._executeCommand(packageManager.installDevDependency('testcafe'));
+        }
+        else {
+            this.reporter.reportActionStarted(ACTIONS.installAllDependencies);
+            this._executeCommand(packageManager.installAllDependencies());
         }
 
         this.reporter.reportTemplateInitSuccess(this.options);
@@ -49,7 +58,7 @@ export default class TemplateGenerator {
         const paths         = await this._prepareFilePaths(srcFolderPath);
 
         for (const [ srcPath, distPath ] of paths)
-            await fs.promises.cp(srcPath, distPath);
+            await fs.cp(srcPath, distPath);
     }
 
     private _createConfigFile (): Promise<void> {
@@ -80,7 +89,7 @@ export default class TemplateGenerator {
             if (await pathExists(distPath)) {
                 const { override } = await prompt({
                     type:    'confirm',
-                    message: `The following file is already exists: ${ distPath }.\nDo you want to override it?`,
+                    message: `The following file is already exists: ${ distPath }.\nDo you want to override it? `,
                     name:    'override',
                 });
 
@@ -95,7 +104,23 @@ export default class TemplateGenerator {
     }
 
     _executeCommand (command: string): void {
-        execSync(command, { cwd: this.options.rootPath });
+        execSync(command, { cwd: this.options.rootPath, stdio: 'pipe' });
+    }
+
+    private async _updateGithubWorkflow (): Promise<void> {
+        const wfPath         = path.join(TEMPLATES_SRC_FOLDER, this.options.template as string, WORKFLOW_PATH);
+        const workflowString = await fs.readFile(wfPath, { encoding: 'utf-8' });
+        const ymlObject      = parse(workflowString);
+        const build          = ymlObject?.jobs?.build;
+        const runStep        = build?.steps?.find((s: Dictionary<any>) => s.uses === 'DevExpress/testcafe-action@latest');
+
+        if (!build || !runStep)
+            throw new Error(`GitHub workflow file has incorrect structure: ${ wfPath }`);
+
+        build['runs-on'] = OS.win ? 'windows-latest' : 'ubuntu-latest';
+        runStep.with     = { 'args': `chrome ${ this.options.testFolder }` };
+
+        await fs.writeFile(wfPath, stringify(ymlObject), { encoding: 'utf-8' });
     }
 }
 
