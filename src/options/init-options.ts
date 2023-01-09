@@ -51,7 +51,7 @@ export default class InitOptions {
             throw new Error(`The specified tests path is not a folder: ${ testsFolderPath } `);
 
         if (fs.readdirSync(testsFolderPath).length !== 0)
-            throw new Error(`Folder with name tests contains files inside `);
+            throw new Error(`Folder with name ${testsFolderPath} contains files inside `);
 
         return true;
     }
