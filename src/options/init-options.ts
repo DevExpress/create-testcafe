@@ -28,7 +28,7 @@ export default class InitOptions {
     }
 
     setDefaults (): void {
-        this.template             = this.template || this.projectType || 'typescript';
+        this.template             = this.template || this.projectType || 'javascript';
         this.runWizard            = this.runWizard !== null ? this.runWizard : !!this.projectType;
         this.createGithubWorkflow = this.createGithubWorkflow !== null ? this.createGithubWorkflow : true;
     }
@@ -39,8 +39,8 @@ export default class InitOptions {
     }
 
     ensureTestsFolderValid (value: string): boolean {
-        if (!value)
-            throw new Error(`Invalid tests folder path: "${ value }"`);
+        if (!value || typeof value !== 'string')
+            throw new Error(`Invalid tests folder path: "${ value }" `);
 
         const testsFolderPath = path.join(this.rootPath, value);
 
@@ -48,16 +48,16 @@ export default class InitOptions {
             return true;
 
         if (!fs.statSync(testsFolderPath).isDirectory())
-            throw new Error(`The specified tests path is not a folder: ${ testsFolderPath }`);
+            throw new Error(`The specified tests path is not a folder: ${ testsFolderPath } `);
 
         if (fs.readdirSync(testsFolderPath).length !== 0)
-            throw new Error(`Folder with name tests contains files inside`);
+            throw new Error(`Folder with name tests contains files inside `);
 
         return true;
     }
 
     private _ensureTemplateValid (): void {
         if (!this.template || !(this.template in TEMPLATES))
-            throw new Error(`Template prop must be one of ${ Object.keys(TEMPLATES).join(', ') }`);
+            throw new Error(`Template prop must be one of ${ Object.keys(TEMPLATES).join(', ') } `);
     }
 }
