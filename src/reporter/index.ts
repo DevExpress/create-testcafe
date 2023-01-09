@@ -1,60 +1,58 @@
 import InitOptions from '../options/init-options';
 import {
-    black,
-    blue,
     bold,
-    gray,
     green,
-    red,
     white,
-    yellowBright,
     italic,
-    bgWhite,
 } from 'chalk';
 import { MESSAGES } from './messages';
 import path from 'path';
 // @ts-ignore
 import OS from 'os-family';
 
-const TESTCAFE_LOGO = bgWhite(` ${ bold(blue('✔ Test')) }${ italic(black('Café')) } `);
+const TESTCAFE_LOGO = 'Test' + italic('Café');
 
 export default class Reporter {
     reportActionStarted (action: string): void {
-        const message = `${ MESSAGES[action] }\n`;
+        const message = `${ MESSAGES[action] }`;
 
-        console.log(yellowBright(message));
+        console.log(message);
     }
 
     error (err: Error): void {
-        console.log(red('Error occurred during the installation process:'));
+        console.log('Error occurred during the installation process:');
         console.error(err);
     }
 
     reportTemplateInitStarted ({ rootPath, template, testFolder, addTests, createGithubWorkflow }: InitOptions): void {
-        console.log(yellowBright(`Initializing ${ TESTCAFE_LOGO } project in '${ white(rootPath) }' with the following options:`));
-        console.log(`${ yellowBright('Template') } ${ template }`);
-        console.log(`${ yellowBright('Tests folder') } ${ testFolder }`);
-        console.log(`${ yellowBright('Add basic tests suite') } ${ addTests }`);
-        console.log(`${ yellowBright('Create GitHub workflow') } ${ createGithubWorkflow }\n`);
+        console.log(`Initializing ${ TESTCAFE_LOGO } project in '${ white(rootPath) }' with the following options:`);
+        console.log(`Template: ${ template }`);
+        console.log(`Test folder: ${ testFolder }`);
+        console.log(`Add basic tests suite: ${ addTests ? 'Yes' : 'No' }`);
+        console.log(`Create GitHub workflow: ${ createGithubWorkflow ? 'Yes' : 'No' }\n`);
     }
 
     _buildRunCommand ({ tcConfigType, testFolder }: InitOptions): string {
         const browser = OS.mac ? 'safari' : 'chrome';
 
-        return tcConfigType ? `testcafe ${ white(`${ browser } "${ testFolder }"`) }` : `testcafe ${browser}`;
+        return tcConfigType ? `npx testcafe ${ browser } "${ testFolder }"` : `npx testcafe ${ browser }`;
     }
 
     reportTemplateInitSuccess (options: InitOptions): void {
-        const appPath                    = path.relative(process.cwd(), options.rootPath);
-        const ampersand                  = gray('&&');
-        const moveToProjectFolderCommand = appPath ? `${ yellowBright('cd') } ${ white(appPath) }` : '';
+        const appPath = path.relative(process.cwd(), options.rootPath);
+
+        //TODO: FIX for absolute path.
+        const moveToProjectFolderCommand = appPath ? `cd ${ appPath }\n` : '';
         const runTestcafeCommand         = this._buildRunCommand(options);
 
-        const fullCommand = [ moveToProjectFolderCommand, runTestcafeCommand ].filter(c => !!c).join(` ${ ampersand } `);
+        console.log(`${ green(bold(`\nSuccess! Created a ${ TESTCAFE_LOGO } project at`)) } '${ white(options.rootPath) }'\n`);
 
-        console.log(`${ green(bold('✔ Success!')) } ${ yellowBright(`Created a ${ TESTCAFE_LOGO } project at '${ white(options.rootPath) }'`) }`);
-        console.log(yellowBright(`All the testcafe options can be applied in the ${ white(`.testcaferc.${ options.tcConfigType || 'js' }`) } configuration file: https://testcafe.io/documentation/402638/reference/configuration-file`));
-        console.log(yellowBright(`As well as through CLI: https://testcafe.io/documentation/402639/reference/command-line-interface`));
-        console.log(yellowBright(`Run the following command to run tests: ${ fullCommand }\n`));
+        if (!options.tcConfigType)
+            console.log('Check our getting started article: https://testcafe.io/documentation/402635/getting-started\n');
+
+        if (moveToProjectFolderCommand)
+            console.log(`We suggest that you begin by typing:\n${ moveToProjectFolderCommand }`);
+
+        console.log(`Run the following command to run tests: ${ runTestcafeCommand }\n`);
     }
 }
