@@ -68,6 +68,7 @@ async function run (packageManager, appName = '', options = {}) {
         shell: true,
         cwd:   TEMP_DIR_PATH,
         env:   {
+            ...process.env,
             'npm_config_user_agent': userAgent,
         },
     });
