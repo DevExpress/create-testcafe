@@ -3,6 +3,8 @@ const {
     it,
     expect,
 }            = require('@jest/globals');
+const OS = require('os-family');
+
 const {
     run,
     TEMP_DIR_PATH,
@@ -30,6 +32,8 @@ describe('Installation test', function () {
             if (error)
                 throw error;
 
+            const browser = OS.mac ? 'safari' : 'chrome';
+
             const expectedStdOut = `Initializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:
    Template: javascript (default)
    Test location: tests (default)
@@ -39,7 +43,7 @@ Copying file templates...
 Generating a configuration file...
 Installing dependencies...\n
 Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n
-Execute the following command to run tests: npx testcafe chrome\n
+Execute the following command to run tests: npx testcafe ${browser}\n
 `;
 
             const expectedFiles = [
