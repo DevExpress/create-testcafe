@@ -31,9 +31,6 @@ export default class TemplateGenerator {
     async run (): Promise<void> {
         this.reporter.reportTemplateInitStarted(this.options);
 
-        if (this.options.createGithubWorkflow.value)
-            await this._updateGithubWorkflow();
-
         await this._copyTemplateFiles();
 
         if (!this.options.tcConfigType.hasSet)
@@ -55,37 +52,9 @@ export default class TemplateGenerator {
         this.reporter.reportActionStarted(ACTIONS.copyTemplate);
 
         const srcFolderPath = path.join(TEMPLATES_SRC_FOLDER, this.options.template.value);
-        const paths         = await this._prepareFilePaths(srcFolderPath);
+        const filesMap      = await this._prepareFiles(srcFolderPath);
 
-        for (const [ srcPath, distPath ] of paths)
-            await fs.cp(srcPath, distPath);
-    }
-
-    private _createConfigFile (): Promise<void> {
-        this.reporter.reportActionStarted(ACTIONS.createConfig);
-
-        return createConfig(this.options);
-    }
-
-    private async _prepareFilePaths (srcFolderPath: string): Promise<Map<string, string>> {
-        const result   = new Map<string, string>();
-        const srcPaths = await readDir(srcFolderPath)
-            .then(paths => paths.map(p => path.relative(srcFolderPath, p)));
-
-        for (const p of srcPaths) {
-            if (PACKAGE_JSON_NAME.test(p) && this.options.projectType.hasSet)
-                continue;
-
-            if (GITHUB_WORKFLOW_PATH_REGEX.test(p) && !this.options.createGithubWorkflow.value)
-                continue;
-
-            if (DEFAULT_TESTS_PATH_REGEX.test(p) && !this.options.addTests.value)
-                continue;
-
-            const distPath = DEFAULT_TESTS_PATH_REGEX.test(p)
-                ? path.join(this.options.rootPath.value, this.options.testFolder.value, ...p.split(path.sep).slice(1))
-                : path.join(this.options.rootPath.value, p);
-
+        for (const [ distPath, content ] of filesMap) {
             if (await pathExists(distPath)) {
                 const { override } = await prompt({
                     type:    'confirm',
@@ -97,7 +66,52 @@ export default class TemplateGenerator {
                     continue;
             }
 
-            result.set(path.join(srcFolderPath, p), distPath);
+            const distPathDir = path.dirname(distPath);
+
+            if (!await pathExists(distPathDir))
+                await fs.mkdir(distPathDir, { recursive: true });
+
+            await fs.writeFile(distPath, content, { encoding: 'utf-8' });
+        }
+    }
+
+    private _createConfigFile (): Promise<void> {
+        this.reporter.reportActionStarted(ACTIONS.createConfig);
+
+        return createConfig(this.options);
+    }
+
+    private async _prepareFiles (srcFolderPath: string): Promise<Map<string, string>> {
+        const result   = new Map<string, string>();
+        const srcPaths = await readDir(srcFolderPath)
+            .then(paths => paths.map(p => path.relative(srcFolderPath, p)));
+
+        const getFileContent: (p: string) => Promise<null | string> = async (p: string) => {
+            if (PACKAGE_JSON_NAME.test(p) && this.options.projectType.hasSet)
+                return null;
+
+            if (GITHUB_WORKFLOW_PATH_REGEX.test(p)) {
+                if (this.options.createGithubWorkflow.value)
+                    return await this._getUpdatedGithubWorkflowContent();
+
+                return null;
+            }
+
+            if (DEFAULT_TESTS_PATH_REGEX.test(p) && !this.options.addTests.value)
+                return null;
+
+            return await fs.readFile(path.join(srcFolderPath, p), 'utf-8');
+        };
+
+        for (const p of srcPaths) {
+            const distPath = DEFAULT_TESTS_PATH_REGEX.test(p)
+                ? path.join(this.options.rootPath.value, this.options.testFolder.value, ...p.split(path.sep).slice(1))
+                : path.join(this.options.rootPath.value, p);
+
+            const fileContent = await getFileContent(p);
+
+            if (fileContent)
+                result.set(distPath, fileContent);
         }
 
         return result;
@@ -110,7 +124,7 @@ export default class TemplateGenerator {
         });
     }
 
-    private async _updateGithubWorkflow (): Promise<void> {
+    private async _getUpdatedGithubWorkflowContent (): Promise<string> {
         const wfPath         = path.join(TEMPLATES_SRC_FOLDER, this.options.template.value, WORKFLOW_PATH);
         const workflowString = await fs.readFile(wfPath, { encoding: 'utf-8' });
         const ymlObject      = parse(workflowString);
@@ -123,7 +137,7 @@ export default class TemplateGenerator {
         build['runs-on'] = OS.win ? 'windows-latest' : 'ubuntu-latest';
         runStep.with     = { 'args': `chrome ${ this.options.testFolder.value }` };
 
-        await fs.writeFile(wfPath, stringify(ymlObject), { encoding: 'utf-8' });
+        return stringify(ymlObject);
     }
 }
 

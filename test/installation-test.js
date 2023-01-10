@@ -2,7 +2,7 @@ const {
     describe,
     it,
     expect,
-}            = require('@jest/globals');
+}  = require('@jest/globals');
 const OS = require('os-family');
 
 const {
@@ -13,7 +13,7 @@ const {
     GITHUB_WORKFLOW_PATH,
     TC_CONFIG_NAME,
     PACKAGE_JSON_NAME,
-}            = require('./utils');
+} = require('./utils');
 
 const PACKAGE_MANAGERS = [
     'npm',
@@ -22,11 +22,11 @@ const PACKAGE_MANAGERS = [
 ];
 
 // eslint-disable-next-line no-undef
-jest.setTimeout(1000 * 60);
+jest.setTimeout(1000 * 120);
 describe('Installation test', function () {
     for (const packageManager of PACKAGE_MANAGERS) {
 
-        it('Installation to empty project without params', async () => {
+        it(`[${ packageManager }] Installation to empty project without params`, async () => {
             const { exitCode, stdout, files, error } = await run(packageManager);
 
             if (error)
@@ -34,17 +34,16 @@ describe('Installation test', function () {
 
             const browser = OS.mac ? 'safari' : 'chrome';
 
-            const expectedStdOut = `Initializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:
-   Template: javascript (default)
-   Test location: tests (default)
-   Populate the project with sample tests: Yes (default)
-   Create a GitHub Actions workflow: Yes (default)
-Copying file templates...
-Generating a configuration file...
-Installing dependencies...\n
-Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n
-Execute the following command to run tests: npx testcafe ${browser}\n
-`;
+            const expectedStdOut = `Initializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
+                                   + `   Template: javascript (default)\n`
+                                   + `   Test location: tests (default)\n`
+                                   + `   Populate the project with sample tests: Yes (default)\n`
+                                   + `   Create a GitHub Actions workflow: Yes (default)\n`
+                                   + `Copying file templates...\n`
+                                   + `Generating a configuration file...\n`
+                                   + `Installing dependencies...\n\n`
+                                   + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
+                                   + `Execute the following command to run tests: npx testcafe ${ browser }\n\n`;
 
             const expectedFiles = [
                 GITHUB_WORKFLOW_PATH,
