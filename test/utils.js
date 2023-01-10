@@ -1,6 +1,7 @@
 const path      = require('path');
 const { spawn } = require('child_process');
 const fs        = require('fs');
+const OS        = require('os-family');
 
 const EXCLUDE_PATTERNS = [
     /.*[/\\]node_modules[/\\].*/,
@@ -55,8 +56,10 @@ async function run (packageManager, appName = '', options = {}) {
         .map(([key, value]) => `--${ key } ${ value }`)
         .join(' ');
 
+    const cmdExecutor = OS.win ? 'node' : 'nodejs';
+
     const command = [
-        'node',
+        cmdExecutor,
         path.join(__dirname, '..'),
         appName,
         argsString,
