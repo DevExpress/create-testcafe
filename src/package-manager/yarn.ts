@@ -5,7 +5,7 @@ export default class Yarn implements PackageManager {
         return `yarn add --dev ${ name }`;
     }
 
-    installGlobally (name: string): string {
-        return `yarn global add ${ name }`;
+    installAllDependencies (): string {
+        return `yarn`;
     }
 }

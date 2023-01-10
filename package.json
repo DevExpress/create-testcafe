@@ -5,13 +5,13 @@
   "bin": {
     "create-testcafe": "./dist/bin.js"
   },
+  "main": "./dist/bin.js",
   "scripts": {
     "lint": "eslint src/**/*.ts test/**/*.js",
     "clean": "rimraf dist",
     "compile": "tsc",
     "copy-templates": "copyfiles -a \"./templates/**/*.*\" dist",
-    "reinstall": "npm uninstall -g create-testcafe && npm i -g",
-    "fast-build": "npm run clean && npm run compile && npm run copy-templates && npm run reinstall",
+    "fast-build": "npm run clean && npm run compile && npm run copy-templates",
     "build": "npm run lint && npm run fast-build",
     "test-jest": "jest test/installation-test.js",
     "test": "npm run build && npm run test-jest"
@@ -28,12 +28,14 @@
     "eslint": "8.22.0",
     "jest": "^29.3.1",
     "rimraf": "^3.0.2",
+    "testcafe": "^2.2.0",
     "typescript": "^4.9.4"
   },
   "dependencies": {
     "chalk": "^4.1.2",
     "inquirer": "^8.2.5",
     "os-family": "^1.1.0",
+    "yaml": "^2.2.1",
     "yargs": "^17.6.2"
   }
 }

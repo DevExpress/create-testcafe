@@ -4,7 +4,7 @@ export function testsFolderValidator (initOptions: InitOptions) {
     return function (val: string) {
         try {
             // If testcafe config already exists, user most likely has testcafe tests
-            return initOptions.tcConfigType || initOptions.ensureTestsFolderValid(val);
+            return initOptions.tcConfigType.hasSet || initOptions.ensureTestsFolderValid(val);
         }
         catch (err) {
             if (err instanceof Error)

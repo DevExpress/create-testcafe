@@ -13,13 +13,14 @@ const reporter = new Reporter();
 Promise.resolve()
     .then(() => setCliOptions(options))
     .then(() => setEnvironmentOptions(options))
-    .then(() => options.setDefaults())
-    .then(() => options.runWizard ? runWizard(options) : null)
+    .then(() => options.runWizard.value ? runWizard(options) : null)
     .then(() => options.validateAll())
     .then(() => new TemplateGenerator(options, reporter))
     .then(generator => generator.run())
     .catch(err => {
         reporter.error(err);
 
-        throw err;
+        // eslint-disable-next-line no-process-exit
+        process.exit(1);
+        //throw err;
     });
