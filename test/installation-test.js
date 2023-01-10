@@ -2,7 +2,6 @@ const {
     describe,
     it,
     expect,
-    beforeAll,
 }            = require('@jest/globals');
 const {
     run,
@@ -13,7 +12,6 @@ const {
     TC_CONFIG_NAME,
     PACKAGE_JSON_NAME,
 }            = require('./utils');
-const { execSync } = require('child_process');
 
 const PACKAGE_MANAGERS = [
     'npm',
@@ -24,11 +22,6 @@ const PACKAGE_MANAGERS = [
 // eslint-disable-next-line no-undef
 jest.setTimeout(1000 * 60);
 describe('Installation test', function () {
-    beforeAll(() => {
-        execSync('npm i -g yarn');
-        execSync('npm i -g pnpm');
-    });
-
     for (const packageManager of PACKAGE_MANAGERS) {
 
         it('Installation to empty project without params', async () => {
