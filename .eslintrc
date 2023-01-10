@@ -91,7 +91,6 @@
     "new-cap": [2, { "capIsNew": false }],
     "space-before-function-paren": [2, "always"],
     "handle-callback-err": 0,
-    "linebreak-style": [2, "unix"],
     "no-duplicate-imports": 2,
     "comma-dangle": ["error", "always-multiline"],
     "prefer-rest-params": 0,
