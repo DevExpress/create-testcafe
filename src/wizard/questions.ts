@@ -9,27 +9,27 @@ export function buildQuestions (initOpts: InitOptions): any[] {
         {
             type:    'list',
             name:    OPTIONS_NAMES.template,
-            message: 'Choose a project template',
+            message: 'Select a template for your project',
             choices: Object.keys(TEMPLATES),
             default: initOpts.template.hasSet ? initOpts.template.value : initOpts.projectType.value,
         },
         {
             type:     'input',
             name:     OPTIONS_NAMES.testFolder,
-            message:  'Choose tests folder',
+            message:  'Specify the test folder path',
             default:  initOpts.testFolder.value,
             validate: testsFolderValidator(initOpts),
         },
         {
             type:    'confirm',
             name:    OPTIONS_NAMES.addTests,
-            message: 'Do you want to add tests example suit?',
+            message: 'Do you want to initialize the project with sample tests?',
             default: initOpts.addTests.value,
         },
         {
             type:    'confirm',
             name:    OPTIONS_NAMES.createGithubWorkflow,
-            message: 'Do you want to create a GitHub workflow?',
+            message: 'Do you want to initialize the project with a GitHub Actions workflow template?',
             default: initOpts.addGithubActions.value,
         },
     ];
