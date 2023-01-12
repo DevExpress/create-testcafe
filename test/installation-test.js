@@ -1,160 +1,262 @@
 const {
     describe,
     it,
-    afterAll,
-    beforeAll,
     expect,
-}            = require('@jest/globals');
-const fs           = require('fs');
-const childProcess = require('child_process');
-const path         = require('path');
+    afterEach,
+    jest: jestLib,
+}                         = require('@jest/globals');
+const OS                        = require('os-family');
+const path                      = require('path');
+const { generateConfigContent } = require('../dist/template-generator/testcafe-config');
 
-const PROJECT_FOLDER = 'tmp_test_project';
+const {
+    run,
+    TEMP_DIR_PATH,
+    getTestFilesPaths,
+    getPackageLockName,
+    GITHUB_WORKFLOW_PATH,
+    TC_CONFIG_NAME,
+    PACKAGE_JSON_NAME,
+    removeTempDirs,
+    addExistingProjectFiles,
+    ABSOLUTE_TEMP_DIR_NAME,
+} = require('./utils');
 
-function initProject (args) {
-    const argsString = Object.entries(args)
-        .map(([key, value]) => `--${ key } ${ value }`)
-        .join(' ');
-
-    console.log(`Running: npm init testcafe ${ PROJECT_FOLDER } -- ${ argsString }`);
-
-    return childProcess.spawnSync(`npm init testcafe ${ PROJECT_FOLDER } -- ${ argsString }`, {
-        stdio: 'inherit',
-        shell: true,
-    });
-}
-
-function preinitProject () {
-    const packageJsonContent = '{\n' +
-                               '  "name": "data",\n' +
-                               '  "version": "1.0.0",\n' +
-                               '  "scripts": {\n' +
-                               '    "test": "echo"\n' +
-                               '  }\n' +
-                               '}';
-
-    fs.mkdirSync(PROJECT_FOLDER);
-    fs.writeFileSync(path.join(PROJECT_FOLDER, 'package.json'), packageJsonContent);
-    fs.writeFileSync(path.join(PROJECT_FOLDER, '.testcaferc.js'), '');
-}
-
-function cleanProjectFolder () {
-    return fs.rmdirSync(PROJECT_FOLDER, { recursive: true });
-}
-
-const EXCLUDE_PATTERNS = [
-    /.*[/\\]node_modules[/\\].*/,
-    /.*package-lock.json/,
+const PACKAGE_MANAGERS = [
+    'npm',
+    'yarn',
+    'pnpm',
 ];
 
-async function getFiles (dir) {
-    const dirents = await fs.promises.readdir(dir, { withFileTypes: true });
-    const files   = await Promise.all(dirents.map((dirent) => {
-        const res = path.join(dir, dirent.name);
+jestLib.setTimeout(1000 * 120);
 
-        return dirent.isDirectory() ? getFiles(res) : res;
-    }));
+describe('Installation test', function () {
+    afterEach(() => removeTempDirs());
 
-    return files.flat().filter(f => !EXCLUDE_PATTERNS.some(pattern => pattern.test(f)));
-}
+    for (const packageManager of PACKAGE_MANAGERS) {
 
-describe('Installation', function () {
+        it(`Installation to empty project. PM: ${ packageManager }. Template: javascript`, async () => {
+            const template = 'javascript';
+            const {
+                exitCode,
+                stdout,
+                files,
+                error,
+                packageJsonContent,
+                tcConfigContent,
+            } = await run(packageManager, '', { template });
 
-    describe('Clean installation JS', () => {
-        beforeAll(() => {
-            initProject({
-                template:                   'javascript',
-                ['test-folder']:            'custom-test',
-                ['create-github-workflow']: true,
-            });
-        });
+            if (error)
+                throw error;
 
-        afterAll(() => cleanProjectFolder());
+            const browser = OS.mac ? 'safari' : 'chrome';
 
-        it('Project structure', async () => {
-            const files = await getFiles(PROJECT_FOLDER);
+            const expectedStdOut = `Initializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
+                                       + `   Template: ${ template } (you selected this)\n`
+                                       + `   Test location: tests (default)\n`
+                                       + `   Populate the project with sample tests: Yes (default)\n`
+                                       + `   Create a GitHub Actions workflow: Yes (default)\n`
+                                       + `Copying file templates...\n`
+                                       + `Generating a GitHub Actions workflow...\n`
+                                       + `Generating a configuration file...\n`
+                                       + `Installing dependencies...\n\n`
+                                       + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
+                                       + `Execute the following command to run tests: npx testcafe ${ browser }\n\n`;
 
-
-            const expectedResult = [
-                path.join(PROJECT_FOLDER, '.github', 'workflows', 'testcafe.yml'),
-                path.join(PROJECT_FOLDER, '.testcaferc.js'),
-                path.join(PROJECT_FOLDER, 'custom-test', 'page-model.js'),
-                path.join(PROJECT_FOLDER, 'custom-test', 'test.js'),
-                path.join(PROJECT_FOLDER, 'package.json'),
+            const expectedFiles = [
+                GITHUB_WORKFLOW_PATH,
+                TC_CONFIG_NAME,
+                getPackageLockName(packageManager),
+                PACKAGE_JSON_NAME,
+                ...getTestFilesPaths('tests', template),
             ];
 
-            expect(files).toEqual(expectedResult);
+            expectedFiles.sort();
+
+            expect(exitCode).toEqual(0);
+            expect(stdout).toStrictEqual(expectedStdOut);
+            expect(files).toEqual(expectedFiles);
+            expect(packageJsonContent?.devDependencies?.testcafe).toBeDefined();
+            expect(tcConfigContent).toEqual(generateConfigContent({ src: 'tests' }));
         });
-    });
 
+        it(`Installation to existing project. PM: ${ packageManager }. Template: typescript`, async () => {
+            addExistingProjectFiles('', ['.testcaferc.js']);
 
-    describe('Clean installation TS', () => {
-        beforeAll(() => {
-            initProject({
-                template:                   'typescript',
-                ['create-github-workflow']: false,
+            const template = 'typescript';
+            const { exitCode, stdout, files, error, packageJsonContent, tcConfigContent } = await run(packageManager, '', {
+                template,
+                'run-wizard': false,
             });
-        });
 
-        afterAll(() => cleanProjectFolder());
+            if (error)
+                throw error;
 
-        it('Project structure', async () => {
-            const files = await getFiles(PROJECT_FOLDER);
+            const browser = OS.mac ? 'safari' : 'chrome';
 
-            const expectedResult = [
-                path.join(PROJECT_FOLDER, '.testcaferc.js'),
-                path.join(PROJECT_FOLDER, 'package.json'),
-                path.join(PROJECT_FOLDER, 'tests', 'page-model.ts'),
-                path.join(PROJECT_FOLDER, 'tests', 'test.ts'),
+            const expectedStdOut = `Initializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
+                                       + `   Template: ${ template } (you selected this)\n`
+                                       + `   Test location: tests (default)\n`
+                                       + `   Populate the project with sample tests: Yes (default)\n`
+                                       + `   Create a GitHub Actions workflow: Yes (default)\n`
+                                       + `Copying file templates...\n`
+                                       + `Generating a GitHub Actions workflow...\n`
+                                       + `Adding TestCafe to project dependencies...\n\n`
+                                       + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
+                                       + `Execute the following command to run tests: npx testcafe ${ browser } "tests"\n\n`;
+
+            const expectedFiles = [
+                GITHUB_WORKFLOW_PATH,
+                TC_CONFIG_NAME,
+                getPackageLockName(packageManager),
+                PACKAGE_JSON_NAME,
+                ...getTestFilesPaths('tests', template),
             ];
 
-            expect(files).toEqual(expectedResult);
+            expectedFiles.sort();
+
+            expect(exitCode).toEqual(0);
+            expect(stdout).toStrictEqual(expectedStdOut);
+            expect(files).toEqual(expectedFiles);
+            expect(packageJsonContent?.devDependencies?.testcafe).toBeDefined();
+            expect(tcConfigContent).toEqual('');
         });
+
+    }
+
+    it(`Installation to empty project with arguments: relative <appName> , installGHActions = false , testFolder = custom, template = typescript`, async () => {
+        const packageManager = 'npm';
+        const template       = 'typescript';
+        const appName        = 'myApp';
+        const testFolder     = 'custom';
+        const appPath        = path.join(TEMP_DIR_PATH, appName);
+
+        const { exitCode, stdout, files, error, packageJsonContent, tcConfigContent } = await run(packageManager, appName, {
+            template,
+            'test-folder':        testFolder,
+            'add-github-actions': false,
+        });
+
+        if (error)
+            throw error;
+
+        const browser = OS.mac ? 'safari' : 'chrome';
+
+        const expectedStdOut = `Initializing a new TestCafé project at '${ appPath }'. Selected settings:\n`
+                               + `   Template: ${ template } (you selected this)\n`
+                               + `   Test location: ${ testFolder } (you selected this)\n`
+                               + `   Populate the project with sample tests: Yes (default)\n`
+                               + `   Create a GitHub Actions workflow: No (you selected this)\n`
+                               + `Copying file templates...\n`
+                               + `Generating a configuration file...\n`
+                               + `Installing dependencies...\n\n`
+                               + `Success! Created a TestCafé project at '${ appPath }'\n\n`
+                               + `Go to the project directory to run your first test: cd ${ appName }\n\n`
+                               + `Execute the following command to run tests: npx testcafe ${ browser }\n\n`;
+
+        const expectedFiles = [
+            path.join(appName, TC_CONFIG_NAME),
+            path.join(appName, getPackageLockName(packageManager)),
+            path.join(appName, PACKAGE_JSON_NAME),
+            ...getTestFilesPaths(path.join(appName, testFolder), template),
+        ];
+
+        expectedFiles.sort();
+
+        expect(exitCode).toEqual(0);
+        expect(stdout).toStrictEqual(expectedStdOut);
+        expect(files).toEqual(expectedFiles);
+        expect(packageJsonContent?.devDependencies?.testcafe).toBeDefined();
+        expect(tcConfigContent).toEqual(generateConfigContent({ src: testFolder }));
     });
 
-    describe('Installation to the existing JS project', () => {
-        beforeAll(() => {
-            preinitProject();
+    it(`Installation to empty project with arguments: absolute <appName> , testFolder = custom, template = typescript`, async () => {
+        const packageManager = 'npm';
+        const template       = 'typescript';
+        const appName        = 'my-app';
+        const appPath        = path.join(process.cwd(), ABSOLUTE_TEMP_DIR_NAME, appName);
+        const testFolder     = 'custom';
 
-            initProject({
-                template:                   'javascript',
-                ['test-folder']:            'tests',
-                ['create-github-workflow']: true,
-                ['run-wizard']:             false,
-            });
+        const { exitCode, stdout, files, error, packageJsonContent, tcConfigContent } = await run(packageManager, appPath, {
+            template,
+            'test-folder': testFolder,
         });
 
-        afterAll(() => cleanProjectFolder());
+        if (error)
+            throw error;
 
-        it('Project structure', async () => {
-            const files = await getFiles(PROJECT_FOLDER);
+        const browser = OS.mac ? 'safari' : 'chrome';
 
-            const expectedResult = [
-                path.join(PROJECT_FOLDER, '.github', 'workflows', 'testcafe.yml'),
-                path.join(PROJECT_FOLDER, '.testcaferc.js'),
-                path.join(PROJECT_FOLDER, 'package.json'),
-                path.join(PROJECT_FOLDER, 'tests', 'page-model.js'),
-                path.join(PROJECT_FOLDER, 'tests', 'test.js'),
-            ];
+        const expectedStdOut = `Initializing a new TestCafé project at '${ appPath }'. Selected settings:\n`
+                               + `   Template: ${ template } (you selected this)\n`
+                               + `   Test location: ${ testFolder } (you selected this)\n`
+                               + `   Populate the project with sample tests: Yes (default)\n`
+                               + `   Create a GitHub Actions workflow: Yes (default)\n`
+                               + `Copying file templates...\n`
+                               + `Generating a GitHub Actions workflow...\n`
+                               + `Generating a configuration file...\n`
+                               + `Installing dependencies...\n\n`
+                               + `Success! Created a TestCafé project at '${ appPath }'\n\n`
+                               + `Go to the project directory to run your first test: cd ${ path.relative(TEMP_DIR_PATH, appPath) }\n\n`
+                               + `Execute the following command to run tests: npx testcafe ${ browser }\n\n`;
 
-            expect(files).toEqual(expectedResult);
-        });
+        const expectedFiles = [
+            path.join(appName, GITHUB_WORKFLOW_PATH),
+            path.join(appName, TC_CONFIG_NAME),
+            path.join(appName, getPackageLockName(packageManager)),
+            path.join(appName, PACKAGE_JSON_NAME),
+            ...getTestFilesPaths(path.join(appName, testFolder), template),
+        ];
 
-        it('Package JSON', () => {
-            const pkgJsonString = fs.readFileSync(path.join(PROJECT_FOLDER, 'package.json'), { encoding: 'utf-8' });
-            const pkgJson       = JSON.parse(pkgJsonString);
+        expectedFiles.sort();
 
-            expect(pkgJson?.devDependencies?.testcafe).toBeDefined();
-        });
+        expect(exitCode).toEqual(0);
+        expect(stdout).toStrictEqual(expectedStdOut);
+        expect(files).toEqual(expectedFiles);
+        expect(packageJsonContent?.devDependencies?.testcafe).toBeDefined();
+        expect(tcConfigContent).toEqual(generateConfigContent({ src: testFolder }));
     });
-//
-// describe('Installation to the existing TS project', () => {
-//     before(() => initProject());
-//
-//     after(() => cleanProjectFolder());
-//
-//     it('Project structure', () => {
-//         expect('test').eql('test');
-//     });
-// });
+
+    it(`Should throw error if testFolder already contains files`, async () => {
+        const packageManager = 'npm';
+        const testFolderName = 'custom';
+        const testFolderPath = path.join(TEMP_DIR_PATH, testFolderName);
+
+        addExistingProjectFiles('', [path.join(testFolderName, 'test.js')]);
+
+        const { exitCode, stdout, error, packageJsonContent, tcConfigContent } = await run(packageManager, '', {
+            'test-folder': testFolderName,
+            'run-wizard':  false,
+        });
+
+        if (error)
+            throw error;
+
+        const expectedStdOut = 'An error occurred during the installation process:\n' +
+                               `Folder with name ${ testFolderPath } contains files inside\n`;
+
+        expect(exitCode).toEqual(1);
+        expect(stdout).toStrictEqual(expectedStdOut);
+        expect(packageJsonContent?.devDependencies?.testcafe).not.toBeDefined();
+        expect(tcConfigContent).toEqual(null);
+    });
+
+    it(`Should throw error if invalid arguments provided`, async () => {
+        const packageManager = 'npm';
+
+        const { exitCode, stdout, error, packageJsonContent, tcConfigContent } = await run(packageManager, '', {
+            'invalid-arg': 'someValue',
+        });
+
+        if (error)
+            throw error;
+
+        const expectedStdOut = 'An error occurred during the installation process:\n'
+                               + 'Unknown arguments: invalid-arg, invalidArg\n';
+
+        expect(exitCode).toEqual(1);
+        expect(stdout).toStrictEqual(expectedStdOut);
+        expect(packageJsonContent?.devDependencies?.testcafe).not.toBeDefined();
+        expect(tcConfigContent).toEqual(null);
+    });
 });

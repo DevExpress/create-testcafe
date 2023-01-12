@@ -5,10 +5,10 @@ import NPM from './npm';
 export interface PackageManager {
     installDevDependency (name: string): string;
 
-    installGlobally (name: string): string;
+    installAllDependencies (): string;
 }
 
-
+//TODO: Test package managers manually
 function determinePackageManager (): PackageManager {
     if (!process.env.npm_config_user_agent)
         return new NPM();

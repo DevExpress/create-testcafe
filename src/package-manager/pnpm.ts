@@ -5,7 +5,7 @@ export default class PNPM implements PackageManager {
         return `pnpm add --save-dev ${ name }`;
     }
 
-    installGlobally (name: string): string {
-        return `pnpm add -g ${ name }`;
+    installAllDependencies (): string {
+        return `pnpm install`;
     }
 }

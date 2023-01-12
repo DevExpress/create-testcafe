@@ -5,7 +5,7 @@ export default class NPM implements PackageManager {
         return `npm install --save-dev ${ name }`;
     }
 
-    installGlobally (name: string): string {
-        return `npm install -g ${ name }`;
+    installAllDependencies (): string {
+        return `npm install`;
     }
 }

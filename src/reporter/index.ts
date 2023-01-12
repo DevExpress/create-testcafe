@@ -1,60 +1,70 @@
 import InitOptions from '../options/init-options';
 import {
-    black,
-    blue,
-    bold,
-    gray,
     green,
-    red,
     white,
-    yellowBright,
     italic,
-    bgWhite,
+    red,
 } from 'chalk';
 import { MESSAGES } from './messages';
 import path from 'path';
 // @ts-ignore
 import OS from 'os-family';
+import { Option } from '../options/Option';
 
-const TESTCAFE_LOGO = bgWhite(` ${ bold(blue('✔ Test')) }${ italic(black('Café')) } `);
+const TESTCAFE_LOGO = 'Test' + italic('Café');
+
+// const ERROR_MATCH_REGEX = new RegExp(/Error: (.*)\n(.*\(.*\))/);
+
+const HAS_SET_TEXT = {
+    'default':  '(default)',
+    'selected': '(you selected this)',
+};
 
 export default class Reporter {
     reportActionStarted (action: string): void {
-        const message = `${ MESSAGES[action] }\n`;
+        const message = `${ MESSAGES[action] }`;
 
-        console.log(yellowBright(message));
+        console.log(message);
     }
 
     error (err: Error): void {
-        console.log(red('Error occurred during the installation process:'));
-        console.error(err);
+        console.log(red('An error occurred during the installation process:'));
+        console.log(red(err.message));
+        console.error(err.stack?.replace(`Error: ${ err.message }`, ''));
     }
 
-    reportTemplateInitStarted ({ rootPath, template, testFolder, addTests, createGithubWorkflow }: InitOptions): void {
-        console.log(yellowBright(`Initializing ${ TESTCAFE_LOGO } project in '${ white(rootPath) }' with the following options:`));
-        console.log(`${ yellowBright('Template') } ${ template }`);
-        console.log(`${ yellowBright('Tests folder') } ${ testFolder }`);
-        console.log(`${ yellowBright('Add basic tests suite') } ${ addTests }`);
-        console.log(`${ yellowBright('Create GitHub workflow') } ${ createGithubWorkflow }\n`);
+    reportTemplateInitStarted ({ rootPath, template, testFolder, addTests, addGithubActions }: InitOptions): void {
+        console.log(`Initializing a new ${ TESTCAFE_LOGO } project at '${ white(rootPath) }'. Selected settings:`);
+        console.log(this._buildOptionPropText('Template', template));
+        console.log(this._buildOptionPropText('Test location', testFolder));
+        console.log(this._buildOptionPropText('Populate the project with sample tests', addTests));
+        console.log(this._buildOptionPropText('Create a GitHub Actions workflow', addGithubActions));
+    }
+
+    _buildOptionPropText (description: string, prop: Option<any>): string {
+        return `   ${ description }: ${ prop } ${ prop.hasSet ? HAS_SET_TEXT.selected : HAS_SET_TEXT.default }`;
     }
 
     _buildRunCommand ({ tcConfigType, testFolder }: InitOptions): string {
         const browser = OS.mac ? 'safari' : 'chrome';
 
-        return tcConfigType ? `testcafe ${ white(`${ browser } "${ testFolder }"`) }` : `testcafe ${browser}`;
+        return tcConfigType.hasSet ? `npx testcafe ${ browser } "${ testFolder }"` : `npx testcafe ${ browser }`;
     }
 
     reportTemplateInitSuccess (options: InitOptions): void {
-        const appPath                    = path.relative(process.cwd(), options.rootPath);
-        const ampersand                  = gray('&&');
-        const moveToProjectFolderCommand = appPath ? `${ yellowBright('cd') } ${ white(appPath) }` : '';
+        const appPath = path.relative(process.cwd(), options.rootPath.value);
+
+        const moveToProjectFolderCommand = appPath ? `cd ${ appPath }` : '';
         const runTestcafeCommand         = this._buildRunCommand(options);
 
-        const fullCommand = [ moveToProjectFolderCommand, runTestcafeCommand ].filter(c => !!c).join(` ${ ampersand } `);
+        console.log(`${ green.bold(`\nSuccess! Created a ${ TESTCAFE_LOGO } project at`) } '${ white(options.rootPath) }'\n`);
 
-        console.log(`${ green(bold('✔ Success!')) } ${ yellowBright(`Created a ${ TESTCAFE_LOGO } project at '${ white(options.rootPath) }'`) }`);
-        console.log(yellowBright(`All the testcafe options can be applied in the ${ white(`.testcaferc.${ options.tcConfigType || 'js' }`) } configuration file: https://testcafe.io/documentation/402638/reference/configuration-file`));
-        console.log(yellowBright(`As well as through CLI: https://testcafe.io/documentation/402639/reference/command-line-interface`));
-        console.log(yellowBright(`Run the following command to run tests: ${ fullCommand }\n`));
+        if (!options.tcConfigType.value)
+            console.log(`Read the Getting Started guide to learn more about TestCafe: https://testcafe.io/documentation/402635/getting-started\n`);
+
+        if (moveToProjectFolderCommand)
+            console.log(`Go to the project directory to run your first test: ${ white.bgBlackBright(moveToProjectFolderCommand) }\n`);
+
+        console.log(`Execute the following command to run tests: ${ white.bgBlackBright(runTestcafeCommand) }\n`);
     }
 }
