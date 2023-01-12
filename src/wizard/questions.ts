@@ -30,7 +30,7 @@ export function buildQuestions (initOpts: InitOptions): any[] {
             type:    'confirm',
             name:    OPTIONS_NAMES.createGithubWorkflow,
             message: 'Do you want to create a GitHub workflow?',
-            default: initOpts.createGithubWorkflow.value,
+            default: initOpts.addGithubActions.value,
         },
     ];
 }

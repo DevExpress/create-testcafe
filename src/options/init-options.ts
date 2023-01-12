@@ -11,7 +11,7 @@ export default class InitOptions {
     projectType: Option<ProjectType>;
     tcConfigType: Option<'js' | 'json'>;
     runWizard: Option<boolean>;
-    createGithubWorkflow: Option<boolean>;
+    addGithubActions: Option<boolean>;
     rootPath: Option<string>;
     testFolder: Option<string>;
     addTests: Option<boolean>;
@@ -20,9 +20,9 @@ export default class InitOptions {
         this.template             = new Option('javascript');
         this.projectType          = new Option('javascript');
         this.tcConfigType         = new Option('js');
-        this.runWizard            = new Option(false);
-        this.createGithubWorkflow = new Option(true);
-        this.rootPath             = new Option(process.cwd());
+        this.runWizard        = new Option(false);
+        this.addGithubActions = new Option(true);
+        this.rootPath         = new Option(process.cwd());
         this.testFolder           = new Option('tests');
         this.addTests             = new Option(true);
 
@@ -51,7 +51,7 @@ export default class InitOptions {
 
     ensureTestsFolderValid (value: string | null): boolean {
         if (!value || typeof value !== 'string')
-            throw new Error(`Invalid tests folder path: "${ value }" `);
+            throw new Error(`Invalid tests folder path: "${ value }"`);
 
         const testsFolderPath = path.join(this.rootPath.value, value);
 
@@ -59,16 +59,16 @@ export default class InitOptions {
             return true;
 
         if (!fs.statSync(testsFolderPath).isDirectory())
-            throw new Error(`The specified tests path is not a folder: ${ testsFolderPath } `);
+            throw new Error(`The specified tests path is not a folder: ${ testsFolderPath }`);
 
         if (fs.readdirSync(testsFolderPath).length !== 0)
-            throw new Error(`Folder with name ${ testsFolderPath } contains files inside `);
+            throw new Error(`Folder with name ${ testsFolderPath } contains files inside`);
 
         return true;
     }
 
     private _ensureTemplateValid (): void {
         if (!(this.template.value in TEMPLATES))
-            throw new Error(`Template prop must be one of ${ Object.keys(TEMPLATES).join(', ') } `);
+            throw new Error(`Template prop must be one of ${ Object.keys(TEMPLATES).join(', ') }`);
     }
 }

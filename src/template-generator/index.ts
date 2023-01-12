@@ -91,7 +91,7 @@ export default class TemplateGenerator {
                 return null;
 
             if (GITHUB_WORKFLOW_PATH_REGEX.test(p)) {
-                if (this.options.createGithubWorkflow.value)
+                if (this.options.addGithubActions.value)
                     return await this._getUpdatedGithubWorkflowContent();
 
                 return null;
@@ -125,6 +125,8 @@ export default class TemplateGenerator {
     }
 
     private async _getUpdatedGithubWorkflowContent (): Promise<string> {
+        this.reporter.reportActionStarted(ACTIONS.createGithubWorkflow);
+
         const wfPath         = path.join(TEMPLATES_SRC_FOLDER, this.options.template.value, WORKFLOW_PATH);
         const workflowString = await fs.readFile(wfPath, { encoding: 'utf-8' });
         const ymlObject      = parse(workflowString);

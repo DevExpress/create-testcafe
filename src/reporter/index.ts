@@ -33,12 +33,12 @@ export default class Reporter {
         console.error(err.stack?.replace(`Error: ${ err.message }`, ''));
     }
 
-    reportTemplateInitStarted ({ rootPath, template, testFolder, addTests, createGithubWorkflow }: InitOptions): void {
+    reportTemplateInitStarted ({ rootPath, template, testFolder, addTests, addGithubActions }: InitOptions): void {
         console.log(`Initializing a new ${ TESTCAFE_LOGO } project at '${ white(rootPath) }'. Selected settings:`);
         console.log(this._buildOptionPropText('Template', template));
         console.log(this._buildOptionPropText('Test location', testFolder));
         console.log(this._buildOptionPropText('Populate the project with sample tests', addTests));
-        console.log(this._buildOptionPropText('Create a GitHub Actions workflow', createGithubWorkflow));
+        console.log(this._buildOptionPropText('Create a GitHub Actions workflow', addGithubActions));
     }
 
     _buildOptionPropText (description: string, prop: Option<any>): string {

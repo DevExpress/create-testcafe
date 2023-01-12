@@ -3,7 +3,8 @@ import path from 'path';
 import { Dictionary } from '../interfaces';
 import * as fs from 'fs';
 
-function generateConfigContent (opts: Dictionary<any>): string {
+//Export for tests
+export function generateConfigContent (opts: Dictionary<any>): string {
     return `module.exports = ${ JSON.stringify(opts, null, 4) }`;
 }
 
