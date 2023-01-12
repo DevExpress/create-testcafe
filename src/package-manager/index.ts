@@ -8,7 +8,7 @@ export interface PackageManager {
     installAllDependencies (): string;
 }
 
-//TODO: Fix package issue with detecting PackageManager
+//TODO: Test package managers manually
 function determinePackageManager (): PackageManager {
     if (!process.env.npm_config_user_agent)
         return new NPM();

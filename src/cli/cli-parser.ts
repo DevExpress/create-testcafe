@@ -20,13 +20,19 @@ function prepareArgs (args: Dictionary<any>): Dictionary<any> {
 
 
 export default function setRunArgs (options: InitOptions): Promise<void> {
-    //TODO: Throw error if unknown arg is used
     return Promise.resolve().then(() => yargs(process.argv.slice(2))
         .option(OPTION_NAMES.template, { type: 'string', require: false })
         .option(OPTION_NAMES.testFolder, { type: 'string', require: false })
         .option(OPTION_NAMES.runWizard, { type: 'boolean', require: false, alias: 'w' })
         .option(OPTION_NAMES.addGithubActions, { type: 'boolean', require: false })
         .option(OPTION_NAMES.addTests, { type: 'boolean', require: false })
+        .strictOptions(true)
+        .fail((msg, err) => {
+            if (err)
+                throw err;
+
+            throw new Error(msg);
+        })
         .argv,
     )
         .then(args => prepareArgs(args))

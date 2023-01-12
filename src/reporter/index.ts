@@ -54,7 +54,6 @@ export default class Reporter {
     reportTemplateInitSuccess (options: InitOptions): void {
         const appPath = path.relative(process.cwd(), options.rootPath.value);
 
-        //TODO: FIX for absolute path.
         const moveToProjectFolderCommand = appPath ? `cd ${ appPath }` : '';
         const runTestcafeCommand         = this._buildRunCommand(options);
 
