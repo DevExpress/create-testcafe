@@ -34,7 +34,7 @@ export default class Reporter {
     }
 
     reportTemplateInitStarted ({ rootPath, template, testFolder, addTests, addGithubActions }: InitOptions): void {
-        console.log(`Initializing a new ${ TESTCAFE_LOGO } project at '${ white(rootPath) }'. Selected settings:`);
+        console.log(`\nInitializing a new ${ TESTCAFE_LOGO } project at '${ white(rootPath) }'. Selected settings:`);
         console.log(this._buildOptionPropText('Template', template));
         console.log(this._buildOptionPropText('Test location', testFolder));
         console.log(this._buildOptionPropText('Populate the project with sample tests', addTests));

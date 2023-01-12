@@ -51,7 +51,7 @@ describe('Installation test', function () {
 
             const browser = OS.mac ? 'safari' : 'chrome';
 
-            const expectedStdOut = `Initializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
+            const expectedStdOut = `\nInitializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
                                        + `   Template: ${ template } (you selected this)\n`
                                        + `   Test location: tests (default)\n`
                                        + `   Populate the project with sample tests: Yes (default)\n`
@@ -94,7 +94,7 @@ describe('Installation test', function () {
 
             const browser = OS.mac ? 'safari' : 'chrome';
 
-            const expectedStdOut = `Initializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
+            const expectedStdOut = `\nInitializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
                                        + `   Template: ${ template } (you selected this)\n`
                                        + `   Test location: tests (default)\n`
                                        + `   Populate the project with sample tests: Yes (default)\n`
@@ -142,7 +142,7 @@ describe('Installation test', function () {
 
         const browser = OS.mac ? 'safari' : 'chrome';
 
-        const expectedStdOut = `Initializing a new TestCafé project at '${ appPath }'. Selected settings:\n`
+        const expectedStdOut = `\nInitializing a new TestCafé project at '${ appPath }'. Selected settings:\n`
                                + `   Template: ${ template } (you selected this)\n`
                                + `   Test location: ${ testFolder } (you selected this)\n`
                                + `   Populate the project with sample tests: Yes (default)\n`
@@ -187,7 +187,7 @@ describe('Installation test', function () {
 
         const browser = OS.mac ? 'safari' : 'chrome';
 
-        const expectedStdOut = `Initializing a new TestCafé project at '${ appPath }'. Selected settings:\n`
+        const expectedStdOut = `\nInitializing a new TestCafé project at '${ appPath }'. Selected settings:\n`
                                + `   Template: ${ template } (you selected this)\n`
                                + `   Test location: ${ testFolder } (you selected this)\n`
                                + `   Populate the project with sample tests: Yes (default)\n`
