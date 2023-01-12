@@ -6,6 +6,10 @@
     "create-testcafe": "./dist/bin.js"
   },
   "main": "./dist/bin.js",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": { "access": "public" },
   "scripts": {
     "lint": "eslint src/**/*.ts test/**/*.js",
     "clean": "rimraf dist",
@@ -24,9 +28,6 @@
     "url": "https://devexpress.com"
   },
   "homepage": "https://github.com/DevExpress/create-testcafe",
-  "files": [
-    "dist"
-  ],
   "license": "ISC",
   "devDependencies": {
     "@types/inquirer": "^8.2.5",
