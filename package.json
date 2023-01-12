@@ -9,9 +9,6 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "lint": "eslint src/**/*.ts test/**/*.js",
     "clean": "rimraf dist",
