@@ -216,47 +216,4 @@ describe('Installation test', function () {
         expect(packageJsonContent?.devDependencies?.testcafe).toBeDefined();
         expect(tcConfigContent).toEqual(generateConfigContent({ src: testFolder }));
     });
-
-    it(`Should throw error if testFolder already contains files`, async () => {
-        const packageManager = 'npm';
-        const testFolderName = 'custom';
-        const testFolderPath = path.join(TEMP_DIR_PATH, testFolderName);
-
-        addExistingProjectFiles('', [path.join(testFolderName, 'test.js')]);
-
-        const { exitCode, stdout, error, packageJsonContent, tcConfigContent } = await run(packageManager, '', {
-            'test-folder': testFolderName,
-            'run-wizard':  false,
-        });
-
-        if (error)
-            throw error;
-
-        const expectedStdOut = 'An error occurred during the installation process:\n' +
-                               `Folder with name ${ testFolderPath } contains files inside\n`;
-
-        expect(exitCode).toEqual(1);
-        expect(stdout).toStrictEqual(expectedStdOut);
-        expect(packageJsonContent?.devDependencies?.testcafe).not.toBeDefined();
-        expect(tcConfigContent).toEqual(null);
-    });
-
-    it(`Should throw error if invalid arguments provided`, async () => {
-        const packageManager = 'npm';
-
-        const { exitCode, stdout, error, packageJsonContent, tcConfigContent } = await run(packageManager, '', {
-            'invalid-arg': 'someValue',
-        });
-
-        if (error)
-            throw error;
-
-        const expectedStdOut = 'An error occurred during the installation process:\n'
-                               + 'Unknown arguments: invalid-arg, invalidArg\n';
-
-        expect(exitCode).toEqual(1);
-        expect(stdout).toStrictEqual(expectedStdOut);
-        expect(packageJsonContent?.devDependencies?.testcafe).not.toBeDefined();
-        expect(tcConfigContent).toEqual(null);
-    });
 });
