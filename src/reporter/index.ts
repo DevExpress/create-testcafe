@@ -48,7 +48,7 @@ export default class Reporter {
 
     _buildRunCommand ({ tcConfigType, testFolder }: InitOptions): string {
         const browser = OS.mac ? 'safari' : 'chrome';
-        const command = `${ packageManager.runTestcafeCommand } testcafe ${ browser }`;
+        const command = `${ packageManager.npxCommand } testcafe ${ browser }`;
 
         return tcConfigType.hasSet ? `${ command } "${ testFolder }"` : command;
     }

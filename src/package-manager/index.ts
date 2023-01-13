@@ -3,7 +3,7 @@ import PNPM from './pnpm';
 import NPM from './npm';
 
 export interface PackageManager {
-    runTestcafeCommand: string
+    npxCommand: string
 
     installDevDependency (name: string): string;
 

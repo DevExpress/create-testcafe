@@ -9,5 +9,5 @@ export default class NPM implements PackageManager {
         return `npm install`;
     }
 
-    runTestcafeCommand = 'npx';
+    npxCommand = 'npx';
 }

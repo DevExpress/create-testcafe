@@ -9,5 +9,5 @@ export default class PNPM implements PackageManager {
         return `pnpm install`;
     }
 
-    runTestcafeCommand = 'pnpm dlx';
+    npxCommand = 'pnpm dlx';
 }

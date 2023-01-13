@@ -9,5 +9,5 @@ export default class Yarn implements PackageManager {
         return `yarn`;
     }
 
-    runTestcafeCommand = 'npx';
+    npxCommand = 'npx';
 }
