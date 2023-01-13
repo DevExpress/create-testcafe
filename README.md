@@ -31,6 +31,8 @@ If you enable the `--run-wizard` option, the `create-testcafe` tool will display
 
 **Default value**: `true` unless the project directory already includes any project.
 
+**Alias**: `-w`
+
 ### template
 
 The `--template` option determines the programming language for TestCafe tests.
