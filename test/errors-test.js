@@ -9,7 +9,8 @@ const path = require('path');
 const {
     run,
     TEMP_DIR_PATH,
-    addExistingProjectFiles, removeTempDirs,
+    addExistingProjectFiles,
+    removeTempDirs,
 } = require('./utils');
 
 
