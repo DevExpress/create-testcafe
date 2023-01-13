@@ -4,7 +4,7 @@ import {
 import { TEMPLATES } from './templates';
 import path from 'path';
 import fs from 'fs';
-import { Option } from './Option';
+import Option from './option';
 
 export default class InitOptions {
     template: Option<ProjectTemplate>;
@@ -17,14 +17,14 @@ export default class InitOptions {
     addTests: Option<boolean>;
 
     constructor (opts?: Dictionary<any>) {
-        this.template             = new Option('javascript');
-        this.projectType          = new Option('javascript');
-        this.tcConfigType         = new Option('js');
+        this.template         = new Option('javascript');
+        this.projectType      = new Option('javascript');
+        this.tcConfigType     = new Option('js');
         this.runWizard        = new Option(false);
         this.addGithubActions = new Option(true);
         this.rootPath         = new Option(process.cwd());
-        this.testFolder           = new Option('tests');
-        this.addTests             = new Option(true);
+        this.testFolder       = new Option('tests');
+        this.addTests         = new Option(true);
 
         this.merge(opts);
     }
@@ -51,7 +51,7 @@ export default class InitOptions {
 
     ensureTestsFolderValid (value: string | null): boolean {
         if (!value || typeof value !== 'string')
-            throw new Error(`Invalid tests folder path: "${ value }"`);
+            throw new Error(`Invalid test folder path: "${ value }"`);
 
         const testsFolderPath = path.join(this.rootPath.value, value);
 
@@ -59,16 +59,16 @@ export default class InitOptions {
             return true;
 
         if (!fs.statSync(testsFolderPath).isDirectory())
-            throw new Error(`The specified tests path is not a folder: ${ testsFolderPath }`);
+            throw new Error(`The ${ testsFolderPath } path points to a file. Specify a different test folder path.`);
 
         if (fs.readdirSync(testsFolderPath).length !== 0)
-            throw new Error(`Folder with name ${ testsFolderPath } contains files inside`);
+            throw new Error(`The ${ testsFolderPath } folder is not empty.`);
 
         return true;
     }
 
     private _ensureTemplateValid (): void {
         if (!(this.template.value in TEMPLATES))
-            throw new Error(`Template prop must be one of ${ Object.keys(TEMPLATES).join(', ') }`);
+            throw new Error(`The template value is invalid. Specify one of the following templates: ${ Object.keys(TEMPLATES).join(', ') }`);
     }
 }

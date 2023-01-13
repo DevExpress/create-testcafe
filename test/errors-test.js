@@ -3,8 +3,8 @@ const {
     it,
     expect,
     afterEach,
-}                         = require('@jest/globals');
-const path                      = require('path');
+}          = require('@jest/globals');
+const path = require('path');
 
 const {
     run,
@@ -32,7 +32,7 @@ describe('Errors test', function () {
             throw error;
 
         const expectedStdOut = 'An error occurred during the installation process:\n' +
-                               `Folder with name ${ testFolderPath } contains files inside\n`;
+                               `The ${ testFolderPath } folder is not empty.\n`;
 
         expect(exitCode).toEqual(1);
         expect(stdout).toStrictEqual(expectedStdOut);
@@ -56,7 +56,7 @@ describe('Errors test', function () {
             throw error;
 
         const expectedStdOut = 'An error occurred during the installation process:\n' +
-                               `The specified tests path is not a folder: ${ testFolderPath }\n`;
+                               `The ${ testFolderPath } path points to a file. Specify a different test folder path.\n`;
 
         expect(exitCode).toEqual(1);
         expect(stdout).toStrictEqual(expectedStdOut);
@@ -77,7 +77,7 @@ describe('Errors test', function () {
             throw error;
 
         const expectedStdOut = 'An error occurred during the installation process:\n' +
-                               'Invalid tests folder path: ""\n';
+                               'Invalid test folder path: ""\n';
 
         expect(exitCode).toEqual(1);
         expect(stdout).toStrictEqual(expectedStdOut);

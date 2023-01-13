@@ -4,7 +4,7 @@ const {
     expect,
     afterEach,
     jest: jestLib,
-}                         = require('@jest/globals');
+}                               = require('@jest/globals');
 const OS                        = require('os-family');
 const path                      = require('path');
 const { generateConfigContent } = require('../dist/template-generator/testcafe-config');
@@ -22,18 +22,19 @@ const {
     ABSOLUTE_TEMP_DIR_NAME,
 } = require('./utils');
 
-const PACKAGE_MANAGERS = [
-    'npm',
-    'yarn',
-    'pnpm',
-];
+const PACKAGE_MANAGERS = {
+    'npm':  'npx',
+    'yarn': 'npx',
+    'pnpm': 'pnpm dlx',
+};
 
 jestLib.setTimeout(1000 * 120);
 
 describe('Installation test', function () {
     afterEach(() => removeTempDirs());
 
-    for (const packageManager of PACKAGE_MANAGERS) {
+    for (const packageManager in PACKAGE_MANAGERS) {
+        const npx = PACKAGE_MANAGERS[packageManager];
 
         it(`Installation to empty project. PM: ${ packageManager }. Template: javascript`, async () => {
             const template = 'javascript';
@@ -44,7 +45,7 @@ describe('Installation test', function () {
                 error,
                 packageJsonContent,
                 tcConfigContent,
-            } = await run(packageManager, '', { template });
+            }        = await run(packageManager, '', { template });
 
             if (error)
                 throw error;
@@ -52,16 +53,16 @@ describe('Installation test', function () {
             const browser = OS.mac ? 'safari' : 'chrome';
 
             const expectedStdOut = `\nInitializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
-                                       + `   Template: ${ template } (you selected this)\n`
-                                       + `   Test location: tests (default)\n`
-                                       + `   Populate the project with sample tests: Yes (default)\n`
-                                       + `   Create a GitHub Actions workflow: Yes (default)\n`
-                                       + `Copying file templates...\n`
-                                       + `Generating a GitHub Actions workflow...\n`
-                                       + `Generating a configuration file...\n`
-                                       + `Installing dependencies...\n\n`
-                                       + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
-                                       + `Execute the following command to run tests: npx testcafe ${ browser }\n\n`;
+                                   + `   Template: ${ template } (you selected this)\n`
+                                   + `   Test location: tests (default)\n`
+                                   + `   Populate the project with sample tests: Yes (default)\n`
+                                   + `   Create a GitHub Actions workflow: Yes (default)\n`
+                                   + `Copying file templates...\n`
+                                   + `Generating a GitHub Actions workflow...\n`
+                                   + `Generating a configuration file...\n`
+                                   + `Installing dependencies...\n\n`
+                                   + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
+                                   + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 
             const expectedFiles = [
                 GITHUB_WORKFLOW_PATH,
@@ -83,7 +84,7 @@ describe('Installation test', function () {
         it(`Installation to existing project. PM: ${ packageManager }. Template: typescript`, async () => {
             addExistingProjectFiles('', ['.testcaferc.js']);
 
-            const template = 'typescript';
+            const template                                                                = 'typescript';
             const { exitCode, stdout, files, error, packageJsonContent, tcConfigContent } = await run(packageManager, '', {
                 template,
                 'run-wizard': false,
@@ -95,15 +96,15 @@ describe('Installation test', function () {
             const browser = OS.mac ? 'safari' : 'chrome';
 
             const expectedStdOut = `\nInitializing a new TestCafé project at '${ TEMP_DIR_PATH }'. Selected settings:\n`
-                                       + `   Template: ${ template } (you selected this)\n`
-                                       + `   Test location: tests (default)\n`
-                                       + `   Populate the project with sample tests: Yes (default)\n`
-                                       + `   Create a GitHub Actions workflow: Yes (default)\n`
-                                       + `Copying file templates...\n`
-                                       + `Generating a GitHub Actions workflow...\n`
-                                       + `Adding TestCafe to project dependencies...\n\n`
-                                       + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
-                                       + `Execute the following command to run tests: npx testcafe ${ browser } "tests"\n\n`;
+                                   + `   Template: ${ template } (you selected this)\n`
+                                   + `   Test location: tests (default)\n`
+                                   + `   Populate the project with sample tests: Yes (default)\n`
+                                   + `   Create a GitHub Actions workflow: Yes (default)\n`
+                                   + `Copying file templates...\n`
+                                   + `Generating a GitHub Actions workflow...\n`
+                                   + `Adding TestCafe to project dependencies...\n\n`
+                                   + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
+                                   + `Execute the following command to run tests: ${ npx } testcafe ${ browser } "tests"\n\n`;
 
             const expectedFiles = [
                 GITHUB_WORKFLOW_PATH,
@@ -126,6 +127,7 @@ describe('Installation test', function () {
 
     it(`Installation to empty project with arguments: relative <appName> , installGHActions = false , testFolder = custom, template = typescript`, async () => {
         const packageManager = 'npm';
+        const npx            = PACKAGE_MANAGERS[packageManager];
         const template       = 'typescript';
         const appName        = 'myApp';
         const testFolder     = 'custom';
@@ -152,7 +154,7 @@ describe('Installation test', function () {
                                + `Installing dependencies...\n\n`
                                + `Success! Created a TestCafé project at '${ appPath }'\n\n`
                                + `Go to the project directory to run your first test: cd ${ appName }\n\n`
-                               + `Execute the following command to run tests: npx testcafe ${ browser }\n\n`;
+                               + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 
         const expectedFiles = [
             path.join(appName, TC_CONFIG_NAME),
@@ -172,6 +174,7 @@ describe('Installation test', function () {
 
     it(`Installation to empty project with arguments: absolute <appName> , testFolder = custom, template = typescript`, async () => {
         const packageManager = 'npm';
+        const npx            = PACKAGE_MANAGERS[packageManager];
         const template       = 'typescript';
         const appName        = 'my-app';
         const appPath        = path.join(process.cwd(), ABSOLUTE_TEMP_DIR_NAME, appName);
@@ -198,7 +201,7 @@ describe('Installation test', function () {
                                + `Installing dependencies...\n\n`
                                + `Success! Created a TestCafé project at '${ appPath }'\n\n`
                                + `Go to the project directory to run your first test: cd ${ path.relative(TEMP_DIR_PATH, appPath) }\n\n`
-                               + `Execute the following command to run tests: npx testcafe ${ browser }\n\n`;
+                               + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 
         const expectedFiles = [
             path.join(appName, GITHUB_WORKFLOW_PATH),

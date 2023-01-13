@@ -8,4 +8,6 @@ export default class Yarn implements PackageManager {
     installAllDependencies (): string {
         return `yarn`;
     }
+
+    runTestcafeCommand = 'npx';
 }

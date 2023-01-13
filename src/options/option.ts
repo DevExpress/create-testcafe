@@ -1,4 +1,4 @@
-export class Option<T> {
+export default class Option<T> {
     private _value?: T;
     private readonly _defaultValue: T;
 

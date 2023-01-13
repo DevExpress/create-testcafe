@@ -8,4 +8,6 @@ export default class NPM implements PackageManager {
     installAllDependencies (): string {
         return `npm install`;
     }
+
+    runTestcafeCommand = 'npx';
 }
