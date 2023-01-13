@@ -2,6 +2,6 @@ export const OPTION_NAMES = {
     template:         'template',
     testFolder:       'test-folder',
     runWizard:        'run-wizard',
-    addGithubActions: 'add-github-actions',
-    addTests:         'add-tests',
+    addGithubActions: 'github-actions-init',
+    addTests:         'include-sample-tests',
 };

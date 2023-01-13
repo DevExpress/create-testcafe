@@ -125,7 +125,7 @@ describe('Installation test', function () {
 
     }
 
-    it(`Installation to empty project with arguments: relative <appName> , installGHActions = false , testFolder = custom, template = typescript`, async () => {
+    it(`Installation to empty project with arguments: relative <appName> , github-actions-init = false , test-folder = custom, template = typescript`, async () => {
         const packageManager = 'npm';
         const npx            = PACKAGE_MANAGERS[packageManager];
         const template       = 'typescript';
@@ -135,8 +135,8 @@ describe('Installation test', function () {
 
         const { exitCode, stdout, files, error, packageJsonContent, tcConfigContent } = await run(packageManager, appName, {
             template,
-            'test-folder':        testFolder,
-            'add-github-actions': false,
+            'test-folder':         testFolder,
+            'github-actions-init': false,
         });
 
         if (error)
