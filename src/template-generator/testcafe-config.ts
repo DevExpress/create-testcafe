@@ -4,7 +4,7 @@ import { Dictionary } from '../interfaces';
 import * as fs from 'fs';
 
 //Export for tests
-export function generateConfigContent (opts: Dictionary<any>): string {
+export function generateConfigContent (opts: Dictionary<unknown>): string {
     return `module.exports = ${ JSON.stringify(opts, null, 4) }`;
 }
 

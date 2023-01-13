@@ -9,7 +9,8 @@ import { MESSAGES } from './messages';
 import path from 'path';
 // @ts-ignore
 import OS from 'os-family';
-import { Option } from '../options/Option';
+import Option from '../options/option';
+import { packageManager } from '../package-manager';
 
 const TESTCAFE_LOGO = 'Test' + italic('Café');
 
@@ -47,8 +48,9 @@ export default class Reporter {
 
     _buildRunCommand ({ tcConfigType, testFolder }: InitOptions): string {
         const browser = OS.mac ? 'safari' : 'chrome';
+        const command = `${ packageManager.npxCommand } testcafe ${ browser }`;
 
-        return tcConfigType.hasSet ? `npx testcafe ${ browser } "${ testFolder }"` : `npx testcafe ${ browser }`;
+        return tcConfigType.hasSet ? `${ command } "${ testFolder }"` : command;
     }
 
     reportTemplateInitSuccess (options: InitOptions): void {

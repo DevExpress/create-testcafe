@@ -2,7 +2,7 @@ module.exports = {
     clearMocks:       true,
     coverageProvider: 'v8',
     testMatch:        [
-        '**/test/**/*.[jt]s?(x)',
+        '**/test/**/*-test.js',
     ],
     testPathIgnorePatterns: [
         '/node_modules/',

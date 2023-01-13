@@ -3,6 +3,8 @@ import PNPM from './pnpm';
 import NPM from './npm';
 
 export interface PackageManager {
+    npxCommand: string
+
     installDevDependency (name: string): string;
 
     installAllDependencies (): string;

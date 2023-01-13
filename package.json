@@ -17,7 +17,7 @@
     "install-pm": "npm i -g npm@9 && npm i -g yarn@1 && npm i -g pnpm@7",
     "fast-build": "npm run clean && npm run compile && npm run copy-templates",
     "build": "npm run lint && npm run fast-build && npm run install-pm",
-    "test-jest": "jest test/installation-test.js",
+    "test-jest": "jest -i",
     "test": "npm run build && npm run test-jest",
     "publish-please": "publish-please",
     "prepublish": "publish-please guard"

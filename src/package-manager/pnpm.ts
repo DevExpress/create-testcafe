@@ -8,4 +8,6 @@ export default class PNPM implements PackageManager {
     installAllDependencies (): string {
         return `pnpm install`;
     }
+
+    npxCommand = 'pnpm dlx';
 }

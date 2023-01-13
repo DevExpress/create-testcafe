@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   build:
-    name: Run Tests Across Node.js Versions and Operating Systems
+    name: Install Node and launch TestCafe tests in Chrome
     runs-on: "windows-latest"
     steps:
       - uses: actions/setup-node@v1
