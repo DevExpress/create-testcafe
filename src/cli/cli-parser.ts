@@ -18,8 +18,8 @@ function prepareArgs (args: Dictionary<any>): Dictionary<any> {
 }
 
 
-export default function setRunArgs (options: InitOptions): Promise<void> {
-    return Promise.resolve().then(() => yargs(process.argv.slice(2))
+export default function setCliOptions (options: InitOptions, processArgs = process.argv.slice(2)): Promise<void> {
+    return Promise.resolve().then(() => yargs(processArgs)
         .option(OPTION_NAMES.template, { type: 'string', require: false })
         .option(OPTION_NAMES.testFolder, { type: 'string', require: false })
         .option(OPTION_NAMES.runWizard, { type: 'boolean', require: false, alias: 'w' })

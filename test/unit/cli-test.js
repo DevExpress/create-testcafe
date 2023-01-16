@@ -2,92 +2,71 @@ const {
     describe,
     it,
     expect,
-}              = require('@jest/globals');
-const { spawnAsync } = require('../utils');
-const path           = require('path');
+}             = require('@jest/globals');
+const path          = require('path');
+const InitOptions   = require('../../dist/options/init-options').default;
+const setCliOptions = require('../../dist/cli/cli-parser').default;
+
 
 describe('CLI tests', function () {
     it(`Should correctly parse CLI arguments without appName`, async () => {
-        const args = {
-            template:               'typescript',
-            'run-wizard':           'true',
-            'test-folder':          'custom',
-            'github-actions-init':  'false',
-            'include-sample-tests': 'false',
-        };
-
-        const argsString = Object.entries(args)
-            .map(([key, value]) => `--${ key } ${ value }`)
-            .join(' ');
-
-        const command = [
-            'node',
-            path.join(__dirname, '..', 'utils', 'cli-mock.js'),
-            argsString,
-        ]
-            .filter(arg => !!arg)
-            .join(' ');
-
-        const { stdout }      = await spawnAsync(command, { shell: true });
-        const resultOptions   = stdout.split('\n').map(optionString => optionString.split('='));
-        const expectedOptions = [
-            ['template', 'typescript'],
-            ['runWizard', 'Yes'],
-            ['testFolder', 'custom'],
-            ['githubActionsInit', 'No'],
-            ['includeSampleTests', 'No'],
-            ['rootPath', process.cwd()],
-            ['projectType', 'null'],
-            ['tcConfigType', 'null'],
+        const args    = [
+            '--template', 'typescript',
+            '--run-wizard', 'true',
+            '--test-folder', 'custom',
+            '--github-actions-init', 'false',
+            '--include-sample-tests', 'false',
         ];
+        const options = new InitOptions();
 
-        resultOptions.pop();
-        resultOptions.sort();
-        expectedOptions.sort();
+        await setCliOptions(options, args);
 
-        expect(resultOptions).toEqual(expectedOptions);
+        expect(options.template.hasSet).toEqual(true);
+        expect(options.template.value).toEqual('typescript');
+
+        expect(options.runWizard.hasSet).toEqual(true);
+        expect(options.runWizard.value).toEqual(true);
+
+        expect(options.testFolder.hasSet).toEqual(true);
+        expect(options.testFolder.value).toEqual('custom');
+
+        expect(options.githubActionsInit.hasSet).toEqual(true);
+        expect(options.githubActionsInit.value).toEqual(false);
+
+        expect(options.includeSampleTests.hasSet).toEqual(true);
+        expect(options.includeSampleTests.value).toEqual(false);
     });
 
     it(`Should correctly parse CLI arguments with appName`, async () => {
         const appName = 'my-app';
-        const args    = {
-            template:               'javascript',
-            'run-wizard':           'false',
-            'test-folder':          'test-test',
-            'github-actions-init':  'true',
-            'include-sample-tests': 'true',
-        };
-
-        const argsString = Object.entries(args)
-            .map(([key, value]) => `--${ key } ${ value }`)
-            .join(' ');
-
-        const command = [
-            'node',
-            path.join(__dirname, '..', 'utils', 'cli-mock.js'),
+        const args    = [
             appName,
-            argsString,
-        ]
-            .filter(arg => !!arg)
-            .join(' ');
-
-        const { stdout }      = await spawnAsync(command, { shell: true });
-        const resultOptions   = stdout.split('\n').map(optionString => optionString.split('='));
-        const expectedOptions = [
-            ['template', 'javascript'],
-            ['runWizard', 'No'],
-            ['testFolder', 'test-test'],
-            ['githubActionsInit', 'Yes'],
-            ['includeSampleTests', 'Yes'],
-            ['rootPath', path.join(process.cwd(), appName)],
-            ['projectType', 'null'],
-            ['tcConfigType', 'null'],
+            '--template', 'javascript',
+            '--run-wizard', 'false',
+            '--test-folder', 'test-test',
+            '--github-actions-init', 'true',
+            '--include-sample-tests', 'true',
         ];
+        const options = new InitOptions();
 
-        resultOptions.pop();
-        resultOptions.sort();
-        expectedOptions.sort();
+        await setCliOptions(options, args);
 
-        expect(resultOptions).toEqual(expectedOptions);
+        expect(options.template.hasSet).toEqual(true);
+        expect(options.template.value).toEqual('javascript');
+
+        expect(options.runWizard.hasSet).toEqual(true);
+        expect(options.runWizard.value).toEqual(false);
+
+        expect(options.testFolder.hasSet).toEqual(true);
+        expect(options.testFolder.value).toEqual('test-test');
+
+        expect(options.githubActionsInit.hasSet).toEqual(true);
+        expect(options.githubActionsInit.value).toEqual(true);
+
+        expect(options.includeSampleTests.hasSet).toEqual(true);
+        expect(options.includeSampleTests.value).toEqual(true);
+
+        expect(options.rootPath.hasSet).toEqual(true);
+        expect(options.rootPath.value).toEqual(path.join(process.cwd(), appName));
     });
 });
