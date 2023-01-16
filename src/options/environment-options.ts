@@ -1,5 +1,5 @@
 import path from 'path';
-import InitOptions, { INIT_OPTIONS_NAMES } from './init-options';
+import InitOptions, { OPTION_NAMES } from './init-options';
 import { ProjectType } from '../interfaces';
 import { pathExists } from '../utils';
 
@@ -32,9 +32,9 @@ export default async function setEnvironmentOptions (options: InitOptions): Prom
     const runWizard    = options.runWizard.hasSet ? options.runWizard.value : projectType || tcConfigType;
 
     const opts = {
-        [INIT_OPTIONS_NAMES.projectType]:  projectType,
-        [INIT_OPTIONS_NAMES.tcConfigType]: tcConfigType,
-        [INIT_OPTIONS_NAMES.runWizard]:    runWizard,
+        [OPTION_NAMES.projectType]:  projectType,
+        [OPTION_NAMES.tcConfigType]: tcConfigType,
+        [OPTION_NAMES.runWizard]:    runWizard,
     };
 
     options.merge(opts);

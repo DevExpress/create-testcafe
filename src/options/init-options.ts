@@ -6,7 +6,7 @@ import path from 'path';
 import fs from 'fs';
 import Option from './option';
 
-export const INIT_OPTIONS_NAMES = {
+export const OPTION_NAMES = {
     template:           'template',
     projectType:        'projectType',
     tcConfigType:       'tcConfigType',
@@ -71,6 +71,9 @@ export default class InitOptions {
 
         if (!fs.statSync(testsFolderPath).isDirectory())
             throw new Error(`The ${ testsFolderPath } path points to a file. Specify a different test folder path.`);
+        // If testcafe config already exists, user most likely has testcafe tests
+        if (this.tcConfigType.value)
+            return true;
 
         if (fs.readdirSync(testsFolderPath).length !== 0)
             throw new Error(`The ${ testsFolderPath } folder is not empty.`);
