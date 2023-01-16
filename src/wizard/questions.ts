@@ -21,9 +21,9 @@ export function buildQuestions (initOpts: InitOptions): any[] {
         },
         {
             type:    'confirm',
-            name:    INIT_OPTIONS_NAMES.includeExampleTest,
+            name:    INIT_OPTIONS_NAMES.includeSampleTests,
             message: 'Do you want to initialize the project with sample tests?',
-            default: initOpts.includeExampleTest.value,
+            default: initOpts.includeSampleTests.value,
         },
         {
             type:    'confirm',

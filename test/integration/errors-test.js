@@ -11,7 +11,7 @@ const {
     TEMP_DIR_PATH,
     addExistingProjectFiles,
     removeTempDirs,
-} = require('./utils');
+} = require('../utils');
 
 
 describe('Errors test', function () {

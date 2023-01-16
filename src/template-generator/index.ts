@@ -97,7 +97,7 @@ export default class TemplateGenerator {
                 return null;
             }
 
-            if (DEFAULT_TESTS_PATH_REGEX.test(p) && !this.options.includeExampleTest.value)
+            if (DEFAULT_TESTS_PATH_REGEX.test(p) && !this.options.includeSampleTests.value)
                 return null;
 
             return await fs.readFile(path.join(srcFolderPath, p), 'utf-8');

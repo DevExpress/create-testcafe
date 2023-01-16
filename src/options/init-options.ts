@@ -14,7 +14,7 @@ export const INIT_OPTIONS_NAMES = {
     githubActionsInit:  'githubActionsInit',
     rootPath:           'rootPath',
     testFolder:         'testFolder',
-    includeExampleTest: 'includeSampleTests',
+    includeSampleTests: 'includeSampleTests',
 };
 
 export default class InitOptions {
@@ -25,7 +25,7 @@ export default class InitOptions {
     githubActionsInit: Option<boolean>;
     rootPath: Option<string>;
     testFolder: Option<string>;
-    includeExampleTest: Option<boolean>;
+    includeSampleTests: Option<boolean>;
 
     constructor (opts?: Dictionary<any>) {
         this.template           = new Option('javascript');
@@ -35,7 +35,7 @@ export default class InitOptions {
         this.githubActionsInit  = new Option(true);
         this.rootPath           = new Option(process.cwd());
         this.testFolder         = new Option('tests');
-        this.includeExampleTest = new Option(true);
+        this.includeSampleTests = new Option(true);
 
         this.merge(opts);
     }

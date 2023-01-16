@@ -24,7 +24,7 @@ export default function setRunArgs (options: InitOptions): Promise<void> {
         .option(INIT_OPTIONS_NAMES.testFolder, { type: 'string', require: false })
         .option(INIT_OPTIONS_NAMES.runWizard, { type: 'boolean', require: false, alias: 'w' })
         .option(INIT_OPTIONS_NAMES.githubActionsInit, { type: 'boolean', require: false })
-        .option(INIT_OPTIONS_NAMES.includeExampleTest, { type: 'boolean', require: false })
+        .option(INIT_OPTIONS_NAMES.includeSampleTests, { type: 'boolean', require: false })
         .strictOptions(true)
         .fail((msg, err) => {
             if (err)

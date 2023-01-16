@@ -7,7 +7,7 @@ const {
 }                               = require('@jest/globals');
 const OS                        = require('os-family');
 const path                      = require('path');
-const { generateConfigContent } = require('../dist/template-generator/testcafe-config');
+const { generateConfigContent } = require('../../dist/template-generator/testcafe-config');
 
 const {
     run,
@@ -20,7 +20,7 @@ const {
     removeTempDirs,
     addExistingProjectFiles,
     ABSOLUTE_TEMP_DIR_NAME,
-} = require('./utils');
+} = require('../utils');
 
 const PACKAGE_MANAGERS = {
     'npm':  'npx',
