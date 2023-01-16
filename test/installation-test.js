@@ -30,7 +30,7 @@ const PACKAGE_MANAGERS = {
 
 jestLib.setTimeout(1000 * 120);
 
-describe('Installation test', function () {
+describe('Installation tests', function () {
     afterEach(() => removeTempDirs());
 
     for (const packageManager in PACKAGE_MANAGERS) {
@@ -62,6 +62,7 @@ describe('Installation test', function () {
                                    + `Generating a configuration file...\n`
                                    + `Installing dependencies...\n\n`
                                    + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
+                                   + `Read the Getting Started guide to learn more about TestCafe: https://testcafe.io/documentation/402635/getting-started\n\n`
                                    + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 
             const expectedFiles = [
@@ -153,6 +154,7 @@ describe('Installation test', function () {
                                + `Generating a configuration file...\n`
                                + `Installing dependencies...\n\n`
                                + `Success! Created a TestCafé project at '${ appPath }'\n\n`
+                               + `Read the Getting Started guide to learn more about TestCafe: https://testcafe.io/documentation/402635/getting-started\n\n`
                                + `Go to the project directory to run your first test: cd ${ appName }\n\n`
                                + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 
@@ -200,6 +202,7 @@ describe('Installation test', function () {
                                + `Generating a configuration file...\n`
                                + `Installing dependencies...\n\n`
                                + `Success! Created a TestCafé project at '${ appPath }'\n\n`
+                               + `Read the Getting Started guide to learn more about TestCafe: https://testcafe.io/documentation/402635/getting-started\n\n`
                                + `Go to the project directory to run your first test: cd ${ path.relative(TEMP_DIR_PATH, appPath) }\n\n`
                                + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 

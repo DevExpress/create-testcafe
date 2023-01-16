@@ -1,7 +1,6 @@
 import yargs from 'yargs';
 import { Dictionary } from '../interfaces';
-import { OPTION_NAMES } from './option-names';
-import InitOptions from '../options/init-options';
+import InitOptions, { INIT_OPTIONS_NAMES } from '../options/init-options';
 import path from 'path';
 
 function prepareArgs (args: Dictionary<any>): Dictionary<any> {
@@ -11,7 +10,7 @@ function prepareArgs (args: Dictionary<any>): Dictionary<any> {
     result.rootPath = path.resolve(process.cwd(), appPath);
 
     for (const key in args) {
-        if (key in OPTION_NAMES)
+        if (key in INIT_OPTIONS_NAMES)
             result[key] = args[key];
     }
 
@@ -21,11 +20,11 @@ function prepareArgs (args: Dictionary<any>): Dictionary<any> {
 
 export default function setRunArgs (options: InitOptions): Promise<void> {
     return Promise.resolve().then(() => yargs(process.argv.slice(2))
-        .option(OPTION_NAMES.template, { type: 'string', require: false })
-        .option(OPTION_NAMES.testFolder, { type: 'string', require: false })
-        .option(OPTION_NAMES.runWizard, { type: 'boolean', require: false, alias: 'w' })
-        .option(OPTION_NAMES.addGithubActions, { type: 'boolean', require: false })
-        .option(OPTION_NAMES.addTests, { type: 'boolean', require: false })
+        .option(INIT_OPTIONS_NAMES.template, { type: 'string', require: false })
+        .option(INIT_OPTIONS_NAMES.testFolder, { type: 'string', require: false })
+        .option(INIT_OPTIONS_NAMES.runWizard, { type: 'boolean', require: false, alias: 'w' })
+        .option(INIT_OPTIONS_NAMES.githubActionsInit, { type: 'boolean', require: false })
+        .option(INIT_OPTIONS_NAMES.includeExampleTest, { type: 'boolean', require: false })
         .strictOptions(true)
         .fail((msg, err) => {
             if (err)
