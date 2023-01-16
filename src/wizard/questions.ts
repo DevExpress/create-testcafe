@@ -10,7 +10,7 @@ export function buildQuestions (initOpts: InitOptions): any[] {
             name:    INIT_OPTIONS_NAMES.template,
             message: 'Select a template for your project',
             choices: Object.keys(TEMPLATES),
-            default: initOpts.template.hasSet ? initOpts.template.value : initOpts.projectType.value ?? initOpts.template.value,
+            default: initOpts.template.hasSet ? initOpts.template.value : initOpts.projectType.value ?? initOpts.template.defaultValue,
         },
         {
             type:     'input',

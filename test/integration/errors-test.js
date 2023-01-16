@@ -3,7 +3,7 @@ const {
     it,
     expect,
     afterEach,
-}          = require('@jest/globals');
+}    = require('@jest/globals');
 const path = require('path');
 
 const {

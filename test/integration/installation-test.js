@@ -4,7 +4,7 @@ const {
     expect,
     afterEach,
     jest: jestLib,
-}                               = require('@jest/globals');
+}                         = require('@jest/globals');
 const OS                        = require('os-family');
 const path                      = require('path');
 const { generateConfigContent } = require('../../dist/template-generator/testcafe-config');
