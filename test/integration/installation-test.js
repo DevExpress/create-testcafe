@@ -4,10 +4,10 @@ const {
     expect,
     afterEach,
     jest: jestLib,
-}                               = require('@jest/globals');
+}                         = require('@jest/globals');
 const OS                        = require('os-family');
 const path                      = require('path');
-const { generateConfigContent } = require('../dist/template-generator/testcafe-config');
+const { generateConfigContent } = require('../../dist/template-generator/testcafe-config');
 
 const {
     run,
@@ -20,7 +20,7 @@ const {
     removeTempDirs,
     addExistingProjectFiles,
     ABSOLUTE_TEMP_DIR_NAME,
-} = require('./utils');
+} = require('../utils');
 
 const PACKAGE_MANAGERS = {
     'npm':  'npx',
@@ -30,7 +30,7 @@ const PACKAGE_MANAGERS = {
 
 jestLib.setTimeout(1000 * 120);
 
-describe('Installation test', function () {
+describe('Installation tests', function () {
     afterEach(() => removeTempDirs());
 
     for (const packageManager in PACKAGE_MANAGERS) {
@@ -62,6 +62,7 @@ describe('Installation test', function () {
                                    + `Generating a configuration file...\n`
                                    + `Installing dependencies...\n\n`
                                    + `Success! Created a TestCafé project at '${ TEMP_DIR_PATH }'\n\n`
+                                   + `Read the Getting Started guide to learn more about TestCafe: https://testcafe.io/documentation/402635/getting-started\n\n`
                                    + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 
             const expectedFiles = [
@@ -125,7 +126,7 @@ describe('Installation test', function () {
 
     }
 
-    it(`Installation to empty project with arguments: relative <appName> , installGHActions = false , testFolder = custom, template = typescript`, async () => {
+    it(`Installation to empty project with arguments: relative <appName> , github-actions-init = false , test-folder = custom, template = typescript`, async () => {
         const packageManager = 'npm';
         const npx            = PACKAGE_MANAGERS[packageManager];
         const template       = 'typescript';
@@ -135,8 +136,8 @@ describe('Installation test', function () {
 
         const { exitCode, stdout, files, error, packageJsonContent, tcConfigContent } = await run(packageManager, appName, {
             template,
-            'test-folder':        testFolder,
-            'add-github-actions': false,
+            'test-folder':         testFolder,
+            'github-actions-init': false,
         });
 
         if (error)
@@ -153,6 +154,7 @@ describe('Installation test', function () {
                                + `Generating a configuration file...\n`
                                + `Installing dependencies...\n\n`
                                + `Success! Created a TestCafé project at '${ appPath }'\n\n`
+                               + `Read the Getting Started guide to learn more about TestCafe: https://testcafe.io/documentation/402635/getting-started\n\n`
                                + `Go to the project directory to run your first test: cd ${ appName }\n\n`
                                + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 
@@ -200,6 +202,7 @@ describe('Installation test', function () {
                                + `Generating a configuration file...\n`
                                + `Installing dependencies...\n\n`
                                + `Success! Created a TestCafé project at '${ appPath }'\n\n`
+                               + `Read the Getting Started guide to learn more about TestCafe: https://testcafe.io/documentation/402635/getting-started\n\n`
                                + `Go to the project directory to run your first test: cd ${ path.relative(TEMP_DIR_PATH, appPath) }\n\n`
                                + `Execute the following command to run tests: ${ npx } testcafe ${ browser }\n\n`;
 

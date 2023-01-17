@@ -6,25 +6,36 @@ import path from 'path';
 import fs from 'fs';
 import Option from './option';
 
+export const OPTION_NAMES = {
+    template:           'template',
+    projectType:        'projectType',
+    tcConfigType:       'tcConfigType',
+    runWizard:          'runWizard',
+    githubActionsInit:  'githubActionsInit',
+    rootPath:           'rootPath',
+    testFolder:         'testFolder',
+    includeSampleTests: 'includeSampleTests',
+};
+
 export default class InitOptions {
     template: Option<ProjectTemplate>;
     projectType: Option<ProjectType>;
-    tcConfigType: Option<'js' | 'json'>;
+    tcConfigType: Option<'js' | 'json' | null>;
     runWizard: Option<boolean>;
-    addGithubActions: Option<boolean>;
+    githubActionsInit: Option<boolean>;
     rootPath: Option<string>;
     testFolder: Option<string>;
-    addTests: Option<boolean>;
+    includeSampleTests: Option<boolean>;
 
     constructor (opts?: Dictionary<any>) {
-        this.template         = new Option('javascript');
-        this.projectType      = new Option('javascript');
-        this.tcConfigType     = new Option('js');
-        this.runWizard        = new Option(false);
-        this.addGithubActions = new Option(true);
-        this.rootPath         = new Option(process.cwd());
-        this.testFolder       = new Option('tests');
-        this.addTests         = new Option(true);
+        this.template           = new Option('javascript');
+        this.projectType        = new Option(null);
+        this.tcConfigType       = new Option(null);
+        this.runWizard          = new Option(false);
+        this.githubActionsInit  = new Option(true);
+        this.rootPath           = new Option(process.cwd());
+        this.testFolder         = new Option('tests');
+        this.includeSampleTests = new Option(true);
 
         this.merge(opts);
     }
@@ -35,7 +46,7 @@ export default class InitOptions {
 
         for (const key in newOptions) {
             if (!(key in this))
-                continue;
+                throw new Error(`Unknown option: ${ key }`);
 
             const opt = this[key as keyof this];
 
@@ -60,6 +71,9 @@ export default class InitOptions {
 
         if (!fs.statSync(testsFolderPath).isDirectory())
             throw new Error(`The ${ testsFolderPath } path points to a file. Specify a different test folder path.`);
+        // If testcafe config already exists, user most likely has testcafe tests
+        if (this.tcConfigType.value)
+            return true;
 
         if (fs.readdirSync(testsFolderPath).length !== 0)
             throw new Error(`The ${ testsFolderPath } folder is not empty.`);

@@ -33,10 +33,10 @@ export default class TemplateGenerator {
 
         await this._copyTemplateFiles();
 
-        if (!this.options.tcConfigType.hasSet)
+        if (!this.options.tcConfigType.value)
             await this._createConfigFile();
 
-        if (this.options.projectType.hasSet) {
+        if (this.options.projectType.value) {
             this.reporter.reportActionStarted(ACTIONS.addTestcafeToDependencies);
             await this._executeCommand(packageManager.installDevDependency('testcafe'));
         }
@@ -87,17 +87,17 @@ export default class TemplateGenerator {
             .then(paths => paths.map(p => path.relative(srcFolderPath, p)));
 
         const getFileContent: (p: string) => Promise<null | string> = async (p: string) => {
-            if (PACKAGE_JSON_NAME.test(p) && this.options.projectType.hasSet)
+            if (PACKAGE_JSON_NAME.test(p) && this.options.projectType.value)
                 return null;
 
             if (GITHUB_WORKFLOW_PATH_REGEX.test(p)) {
-                if (this.options.addGithubActions.value)
+                if (this.options.githubActionsInit.value)
                     return await this._getUpdatedGithubWorkflowContent();
 
                 return null;
             }
 
-            if (DEFAULT_TESTS_PATH_REGEX.test(p) && !this.options.addTests.value)
+            if (DEFAULT_TESTS_PATH_REGEX.test(p) && !this.options.includeSampleTests.value)
                 return null;
 
             return await fs.readFile(path.join(srcFolderPath, p), 'utf-8');

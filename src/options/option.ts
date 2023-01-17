@@ -1,9 +1,9 @@
 export default class Option<T> {
     private _value?: T;
-    private readonly _defaultValue: T;
+    public readonly defaultValue: T;
 
     get value (): T {
-        return this._value ?? this._defaultValue;
+        return this._value ?? this.defaultValue;
     }
 
     set value (val) {
@@ -15,7 +15,7 @@ export default class Option<T> {
     }
 
     constructor (defaultValue: T) {
-        this._defaultValue = defaultValue;
+        this.defaultValue = defaultValue;
     }
 
     toString (): string {

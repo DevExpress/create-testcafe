@@ -1,7 +1,6 @@
 import yargs from 'yargs';
 import { Dictionary } from '../interfaces';
-import { OPTION_NAMES } from './option-names';
-import InitOptions from '../options/init-options';
+import InitOptions, { OPTION_NAMES } from '../options/init-options';
 import path from 'path';
 
 function prepareArgs (args: Dictionary<any>): Dictionary<any> {
@@ -19,13 +18,13 @@ function prepareArgs (args: Dictionary<any>): Dictionary<any> {
 }
 
 
-export default function setRunArgs (options: InitOptions): Promise<void> {
-    return Promise.resolve().then(() => yargs(process.argv.slice(2))
+export default function setCliOptions (options: InitOptions, processArgs = process.argv.slice(2)): Promise<void> {
+    return Promise.resolve().then(() => yargs(processArgs)
         .option(OPTION_NAMES.template, { type: 'string', require: false })
         .option(OPTION_NAMES.testFolder, { type: 'string', require: false })
         .option(OPTION_NAMES.runWizard, { type: 'boolean', require: false, alias: 'w' })
-        .option(OPTION_NAMES.addGithubActions, { type: 'boolean', require: false })
-        .option(OPTION_NAMES.addTests, { type: 'boolean', require: false })
+        .option(OPTION_NAMES.githubActionsInit, { type: 'boolean', require: false })
+        .option(OPTION_NAMES.includeSampleTests, { type: 'boolean', require: false })
         .strictOptions(true)
         .fail((msg, err) => {
             if (err)

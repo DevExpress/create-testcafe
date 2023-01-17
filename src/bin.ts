@@ -22,5 +22,4 @@ Promise.resolve()
 
         // eslint-disable-next-line no-process-exit
         process.exit(1);
-        //throw err;
     });

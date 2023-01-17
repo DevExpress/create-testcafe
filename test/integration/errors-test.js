@@ -3,7 +3,7 @@ const {
     it,
     expect,
     afterEach,
-}          = require('@jest/globals');
+}    = require('@jest/globals');
 const path = require('path');
 
 const {
@@ -11,7 +11,7 @@ const {
     TEMP_DIR_PATH,
     addExistingProjectFiles,
     removeTempDirs,
-} = require('./utils');
+} = require('../utils');
 
 
 describe('Errors test', function () {

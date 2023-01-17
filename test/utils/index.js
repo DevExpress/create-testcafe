@@ -1,7 +1,7 @@
 const path           = require('path');
 const { spawn }      = require('child_process');
 const fs             = require('fs');
-const { pathExists } = require('../dist/utils');
+const { pathExists } = require('../../dist/utils');
 
 const EXCLUDE_PATTERNS = [
     /.*[/\\]node_modules[/\\].*/,
@@ -60,7 +60,7 @@ async function run (packageManager, appName = '', options = {}) {
 
     const command = [
         'node',
-        path.join(__dirname, '..'),
+        path.join(__dirname, '..', '..'),
         appName,
         argsString,
     ]
@@ -141,38 +141,10 @@ function addExistingProjectFiles (appName = '', extraFiles = []) {
     }
 }
 
-// const concat         = require('concat-stream');
-// async function runWizard (commands) {
-//     const proc = spawn('node', [path.join(__dirname, '..')], {
-//         stdio: [null, null, null],
-//         cwd:   TEMP_DIR_PATH,
-//     });
-//
-//     proc.stdin.setEncoding('utf-8');
-//
-//     const wait         = ms => new Promise(resolve => setTimeout(resolve, ms));
-//     const writeCommand = cmd => proc.stdin.write(cmd);
-//
-//     for (const cmd of commands) {
-//         writeCommand(cmd);
-//         await wait(200);
-//     }
-//
-//     proc.stdin.end();
-//
-//     return new Promise(function (resolve) {
-//         proc.stdout.pipe(concat(function (result) {
-//             resolve(result.toString());
-//         }));
-//     });
-// }
-// module.exports.DOWN  = '\x1B\x5B\x42';
-// module.exports.UP    = '\x1B\x5B\x41';
-// module.exports.ENTER = '\x0D';
-
 module.exports = {
     run,
     getTestFilesPaths,
+    spawnAsync,
     getPackageLockName,
     removeTempDirs,
     addExistingProjectFiles,
