@@ -79,9 +79,9 @@ describe('CLI tests', function () {
         await expect(stdout).toEqual('Usage: create-testcafe <appPath> [options]\n' +
                                      '\n' +
                                      'Options:\n' +
-                                     '      --help                  Show help                                [boolean]\n' +
-                                     '      --version               Show version number                      [boolean]\n' +
-                                     '      --template              Project template: javascript or typescript[string]\n' +
+                                     '      --help                  Display the help menu                    [boolean]\n' +
+                                     '      --version               Display the version number               [boolean]\n' +
+                                     '      --template              Project template: javascript/typescript   [string]\n' +
                                      '      --test-folder           Test subfolder path                       [string]\n' +
                                      '  -w, --run-wizard            Launch the interactive wizard            [boolean]\n' +
                                      '      --github-actions-init   Add a GitHub Actions workflow file       [boolean]\n' +

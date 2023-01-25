@@ -24,12 +24,18 @@ function camelToKebab (propName: string): string {
 export default function setCliOptions (options: InitOptions, processArgs = process.argv.slice(2)): Promise<void> {
     return Promise.resolve().then(() => yargs(processArgs)
         .usage('Usage: create-testcafe <appPath> [options]')
+        .describe('help', 'Display the help menu')
+        .describe('version', 'Display the version number')
         .option(camelToKebab(OPTION_NAMES.template), {
             type:     'string',
             require:  false,
-            describe: 'Project template: javascript or typescript',
+            describe: 'Project template: javascript/typescript',
         })
-        .option(camelToKebab(OPTION_NAMES.testFolder), { type: 'string', require: false, describe: 'Test subfolder path' })
+        .option(camelToKebab(OPTION_NAMES.testFolder), {
+            type:     'string',
+            require:  false,
+            describe: 'Test subfolder path',
+        })
         .option(camelToKebab(OPTION_NAMES.runWizard), {
             type:     'boolean',
             require:  false,
@@ -41,7 +47,11 @@ export default function setCliOptions (options: InitOptions, processArgs = proce
             require:  false,
             describe: 'Add a GitHub Actions workflow file',
         })
-        .option(camelToKebab(OPTION_NAMES.includeSampleTests), { type: 'boolean', require: false, describe: 'Add sample tests' })
+        .option(camelToKebab(OPTION_NAMES.includeSampleTests), {
+            type:     'boolean',
+            require:  false,
+            describe: 'Add sample tests',
+        })
         .strictOptions(true)
         .fail((msg, err) => {
             if (err)
