@@ -7,7 +7,7 @@ Use `create-testcafe` to initialize a new TestCafe project, or *add* TestCafe to
 * [Launch commands](#launch-commands)
 * [Specify project name and location](#specify-project-name-and-location)
 * [Options](#options)
-* [Forward options to npm init](#forward-options-to-npm-init)
+* [Use npm init](#use-npm-init)
 * [Run the development version of `create-testcafe`](#run-the-development-version-of-create-testcafe)
 
 ## Launch commands
@@ -15,13 +15,13 @@ Use `create-testcafe` to initialize a new TestCafe project, or *add* TestCafe to
 ```sh
 # npx
 npx create-testcafe
-# npm
-npm init testcafe@latest
 # yarn
 yarn create testcafe
 # pnpm
 pnpm create testcafe
 ```
+
+See the [use npm init](#use-npm-init) section for information on `npm init` support.
 
 ## Specify project name and location
 
@@ -30,9 +30,6 @@ To specify the name and location of the target folder, pass a valid path (relati
 ```sh
 # npx
 npx create-testcafe appName
-# npm 
-# Preface the argument with a double dash
-npm init testcafe@latest -- appName
 # yarn
 yarn create testcafe appName
 # pnpm
@@ -41,7 +38,7 @@ pnpm create testcafe appName
 
 ## Options
 
-The `npm init` command handles options differently from other launch commands. See the [forward options to npm init](#forward-options-to-npm-init) section for more information.
+The `npm init` command handles options differently from other launch commands. See the [use npm init](#use-npm-init) section for more information.
 
 | Option  | Description | Value | Default value 
 | ------------- | ------------- | ------------- | ------------- |
@@ -51,35 +48,15 @@ The `npm init` command handles options differently from other launch commands. S
 | --include-sample-tests  | Add sample tests to the project | Boolean | `true`|
 | --github-actions-init  | Add a GitHub Actions workflow file to the project | Boolean | `true`|
 
-## Forward options to npm init
+## Use npm init
 
-The `npm init` command handles options and arguments differently from other launch commands. 
-
-If you run Windows, preface the folder location argument with a double dash. If you run macOS, you can omit the dash.
+You can launch `create-testcafe` with `npm init`:
 
 ```sh
-# Windows
-npm init testcafe@latest -- appName
-
-# *nix
-npm init testcafe@latest appName
+npm init testcafe@latest
 ```
 
-Both **Windows** and **macOS** users need to preface other options with a double dash.
-
-```sh
-# Windows
-npm init testcafe@latest -- appName -- --template typescript -- --test-folder functional
-
-# *nix
-npm init testcafe@latest appName -- --template typescript -- --test-folder functional
-```
-
-If you *omit* the folder location argument **on Windows**, add an **extra** double dash to the command string:
-
-```sh
-npm init testcafe@latest -- -- --template typescript -- --test-folder functional
-```
+The `npm init` command handles options and arguments differently from other launch commands. The precise syntax of `npm init` depends on your Node.js version. We strongly recommend you use the **npx** command to pass additional parameters.
 
 ## Run the development version of `create-testcafe`
 
