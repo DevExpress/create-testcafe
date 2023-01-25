@@ -2,10 +2,11 @@ const {
     describe,
     it,
     expect,
-}             = require('@jest/globals');
-const path          = require('path');
-const InitOptions   = require('../../dist/options/init-options').default;
-const setCliOptions = require('../../dist/cli/cli-parser').default;
+}              = require('@jest/globals');
+const path           = require('path');
+const { spawnAsync } = require('../utils');
+const InitOptions    = require('../../dist/options/init-options').default;
+const setCliOptions  = require('../../dist/cli/cli-parser').default;
 
 
 describe('CLI tests', function () {
@@ -68,5 +69,22 @@ describe('CLI tests', function () {
 
         expect(options.rootPath.hasSet).toEqual(true);
         expect(options.rootPath.value).toEqual(path.join(process.cwd(), appName));
+    });
+
+    it(`Should correctly display help message`, async () => {
+        const cliMock = `node -e "require('./dist/cli/cli-parser').default({}, ['--help'])"`;
+
+        const { stdout } = await spawnAsync(cliMock, { shell: true, cwd: process.cwd() });
+
+        await expect(stdout).toEqual('Usage: create-testcafe <appPath> [options]\n' +
+                                     '\n' +
+                                     'Options:\n' +
+                                     '      --help                  Show help                                [boolean]\n' +
+                                     '      --version               Show version number                      [boolean]\n' +
+                                     '      --template              Project template: javascript or typescript[string]\n' +
+                                     '      --test-folder           Test subfolder path                       [string]\n' +
+                                     '  -w, --run-wizard            Launch the interactive wizard            [boolean]\n' +
+                                     '      --github-actions-init   Add a GitHub Actions workflow file       [boolean]\n' +
+                                     '      --include-sample-tests  Add sample tests                         [boolean]\n');
     });
 });

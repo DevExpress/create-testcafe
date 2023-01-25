@@ -17,14 +17,31 @@ function prepareArgs (args: Dictionary<any>): Dictionary<any> {
     return result;
 }
 
+function camelToKebab (propName: string): string {
+    return propName.replace(/[A-Z]/g, letter => `-${ letter.toLowerCase() }`);
+}
 
 export default function setCliOptions (options: InitOptions, processArgs = process.argv.slice(2)): Promise<void> {
     return Promise.resolve().then(() => yargs(processArgs)
-        .option(OPTION_NAMES.template, { type: 'string', require: false })
-        .option(OPTION_NAMES.testFolder, { type: 'string', require: false })
-        .option(OPTION_NAMES.runWizard, { type: 'boolean', require: false, alias: 'w' })
-        .option(OPTION_NAMES.githubActionsInit, { type: 'boolean', require: false })
-        .option(OPTION_NAMES.includeSampleTests, { type: 'boolean', require: false })
+        .usage('Usage: create-testcafe <appPath> [options]')
+        .option(camelToKebab(OPTION_NAMES.template), {
+            type:     'string',
+            require:  false,
+            describe: 'Project template: javascript or typescript',
+        })
+        .option(camelToKebab(OPTION_NAMES.testFolder), { type: 'string', require: false, describe: 'Test subfolder path' })
+        .option(camelToKebab(OPTION_NAMES.runWizard), {
+            type:     'boolean',
+            require:  false,
+            describe: 'Launch the interactive wizard',
+            alias:    'w',
+        })
+        .option(camelToKebab(OPTION_NAMES.githubActionsInit), {
+            type:     'boolean',
+            require:  false,
+            describe: 'Add a GitHub Actions workflow file',
+        })
+        .option(camelToKebab(OPTION_NAMES.includeSampleTests), { type: 'boolean', require: false, describe: 'Add sample tests' })
         .strictOptions(true)
         .fail((msg, err) => {
             if (err)
