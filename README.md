@@ -1,90 +1,91 @@
 # create-testcafe
 
-Use `create-testcafe` to initialize a new TestCafe project, or *add* TestCafe to an existing project.
+Use `create-testcafe` to initialize a new TestCafe project, or *add* TestCafe to an existing Node.js project.
 
-* [Usage](#usage)
+![create-testcafe in action](/images/wizard.gif)
+
+* [Launch commands](#launch-commands)
+* [Specify project name and location](#specify-project-name-and-location)
 * [Options](#options)
-* [How to manually test dev version](#how-to-manually-test-dev-version)
+* [Use npm init](#use-npm-init)
+* [Run the development version of `create-testcafe`](#run-the-development-version-of-create-testcafe)
 
-## Usage
+## Launch commands
 
 ```sh
 # npx
 npx create-testcafe
-# npm
-npm init testcafe@latest
 # yarn
 yarn create testcafe
 # pnpm
 pnpm create testcafe
 ```
 
+See the [use npm init](#use-npm-init) section for information on `npm init` support.
+
+## Specify project name and location
+
+To specify the name and location of the target folder, pass a valid path (relative or absolute) to the `create-testcafe` command:
+
+```sh
+# npx
+npx create-testcafe appName
+# yarn
+yarn create testcafe appName
+# pnpm
+pnpm create testcafe appName
+```
+
 ## Options
 
-The `create-testcafe` tool accepts the following options:
+The `npm init` command handles options differently from other launch commands. See the [use npm init](#use-npm-init) section for more information.
 
-### run-wizard
+| Option  | Description | Value | Default value 
+| ------------- | ------------- | ------------- | ------------- |
+| --run-wizard, -w | Launch the interactive wizard | Boolean  | `true` if the target folder is a Node.js project |
+| --template  | Project template  |`javascript` or `typescript` | `typescript` if the project directory includes a `.tsconfig.json` file. |
+| --test-folder  | Test subfolder path | Valid relative path | `test`|
+| --include-sample-tests  | Add sample tests to the project | Boolean | `true`|
+| --github-actions-init  | Add a GitHub Actions workflow file to the project | Boolean | `true`|
 
-If you enable the `--run-wizard` option, the `create-testcafe` tool will display an interactive wizard that allows you to specify project settings:
+## Use npm init
 
-**Type**: Boolean
+You can launch `create-testcafe` with `npm init`:
 
-**Default value**: `true` unless the project directory already includes any project.
+```sh
+npm init testcafe@latest
+```
 
-**Alias**: `-w`
+The `npm init` command handles options and arguments differently from other launch commands. The precise syntax of `npm init` depends on your Node.js version. We strongly recommend you use the **npx** command to pass additional parameters.
 
-### template
+## Run the development version of `create-testcafe`
 
-The `--template` option determines the programming language for TestCafe tests.
+To run the development version of `create-testcafe`, clone the GitHub repository and [build](#build-from-source) the project from source.
 
-**Possible values**:
-* `javascript`
-* `typesctipt`
+When the build is complete, you can run `create-testcafe` [with the `node` command](#run-create-testcafe-with-the-node-command), or [install the development version as a package](#install-as-a-package).
 
-**Default value**: `javascript` unless the project directory includes a `.tsconfig.json` file.
+### Build the project from source
 
-### test-folder
-
-The `--test-folder` option specifies the relative path to the test subfolder.
-
-**Possible values**: all valid relative paths
-
-**Default value**: `tests`
-
-### include-sample-tests
-
-If you enable the `--include-sample-tests` option, the `create-testcafe` tool adds a sample test to the project's test folder.
-
-**Type**: Boolean
-
-**Default value**: `true`
-
-### github-actions-init
-
-If you enable the `--github-actions-init` option, the `create-testcafe` tool adds a YAML file with a simple GitHub Actions workflow to the project folder.
-
-**Type**: Boolean
-
-**Default value**: `true`
-
-## How to manually test dev version
-
-### Node
 ```sh
 npm i
 
 npm run fast-build
+```
 
+### Run `create-testcafe` with the node command
+
+[Build](#build-the-project-from-source) the project and execute the following command:
+
+```sh
 node dist/bin.js ...args
 ```
 
-### With package installation
+### Install as a package
+
+Follow the instructions in the [build](#build-the-project-from-source) section before you install the package.
+
 ```sh
-npm i
-
-npm run fast-build
-
 npm i -g
 
-npx create-testcafe ...args
+create-testcafe ...args
 ```
