@@ -1,6 +1,6 @@
 {
   "name": "create-testcafe",
-  "version": "0.0.2-rc.2",
+  "version": "0.0.2",
   "description": "",
   "bin": {
     "create-testcafe": "./dist/bin.js"
