@@ -1,4 +1,7 @@
-# create-testcafe
+# DEPREDCATED
+The TestCafe team no longer maintains the `create-testcafe` repository. If you want to take over the project, we'll be happy to hand it over. To contact the team, create a new GitHub issue or email support@devexpress.com.
+
+## create-testcafe
 
 Use `create-testcafe` to initialize a new TestCafe project, or *add* TestCafe to an existing Node.js project.
 
@@ -10,7 +13,7 @@ Use `create-testcafe` to initialize a new TestCafe project, or *add* TestCafe to
 * [Use npm init](#use-npm-init)
 * [Run the development version of `create-testcafe`](#run-the-development-version-of-create-testcafe)
 
-## Launch commands
+### Launch commands
 
 ```sh
 # npx
@@ -23,7 +26,7 @@ pnpm create testcafe
 
 See the [use npm init](#use-npm-init) section for information on `npm init` support.
 
-## Specify project name and location
+### Specify project name and location
 
 To specify the name and location of the target folder, pass a valid path (relative or absolute) to the `create-testcafe` command:
 
@@ -36,7 +39,7 @@ yarn create testcafe appName
 pnpm create testcafe appName
 ```
 
-## Options
+### Options
 
 The `npm init` command handles options differently from other launch commands. See the [use npm init](#use-npm-init) section for more information.
 
@@ -48,7 +51,7 @@ The `npm init` command handles options differently from other launch commands. S
 | --include-sample-tests  | Add sample tests to the project | Boolean | `true`|
 | --github-actions-init  | Add a GitHub Actions workflow file to the project | Boolean | `true`|
 
-## Use npm init
+### Use npm init
 
 You can launch `create-testcafe` with `npm init`:
 
@@ -58,13 +61,13 @@ npm init testcafe@latest
 
 The `npm init` command handles options and arguments differently from other launch commands. The precise syntax of `npm init` depends on your Node.js version. We strongly recommend you use the **npx** command to pass additional parameters.
 
-## Run the development version of `create-testcafe`
+### Run the development version of `create-testcafe`
 
 To run the development version of `create-testcafe`, clone the GitHub repository and [build](#build-from-source) the project from source.
 
 When the build is complete, you can run `create-testcafe` [with the `node` command](#run-create-testcafe-with-the-node-command), or [install the development version as a package](#install-as-a-package).
 
-### Build the project from source
+#### Build the project from source
 
 ```sh
 npm i
@@ -72,7 +75,7 @@ npm i
 npm run fast-build
 ```
 
-### Run `create-testcafe` with the node command
+#### Run `create-testcafe` with the node command
 
 [Build](#build-the-project-from-source) the project and execute the following command:
 
@@ -80,7 +83,7 @@ npm run fast-build
 node dist/bin.js ...args
 ```
 
-### Install as a package
+#### Install as a package
 
 Follow the instructions in the [build](#build-the-project-from-source) section before you install the package.
 
