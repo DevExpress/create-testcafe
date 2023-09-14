@@ -1,6 +1,6 @@
 {
   "name": "create-testcafe",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Initialize a new TestCafe project or add TestCafe tests to an existing project",
   "author": {
     "name": "Developer Express Inc.",

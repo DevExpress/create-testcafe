@@ -6,9 +6,9 @@ jobs:
     name: Install Node and launch TestCafe tests in Chrome
     runs-on: "windows-latest"
     steps:
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
-          node-version: "lts"
+          node-version: "lts/*"
       - uses: actions/checkout@v1
       - name: Run TestCafe Tests
         uses: DevExpress/testcafe-action@latest
